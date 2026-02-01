@@ -5,13 +5,12 @@ const firebaseConfig = {
     // 2. Create a new project (or select existing)
     // 3. Go to Project Settings > General > Your Apps > Add App > Web
     // 4. Copy the config object below:
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyBG33egBBScJqr9a0nReDMCUdPw7lsde_U",
+    authDomain: "caferesto-94e83.firebaseapp.com",
+    projectId: "caferesto-94e83",
+    storageBucket: "caferesto-94e83.firebasestorage.app",
+    messagingSenderId: "95176752035",
+    appId: "1:95176752035:web:1b8856dbb1c15f4d3c3816"
 };
 
 // Initialize Firebase
