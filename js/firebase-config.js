@@ -15,11 +15,8 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-if (firebaseConfig.apiKey !== "AIzaSyBG33egBBScJqr9a0nReDMCUdPw7lsde_U") {
-    firebase.initializeApp(firebaseConfig);
-} else {
-    console.warn("Firebase not initialized. Please add your config to js/firebase-config.js");
-}
+firebase.initializeApp(firebaseConfig);
+console.log("Firebase initialized successfully");
 
 const db = firebase.database();
 const auth = firebase.auth();
