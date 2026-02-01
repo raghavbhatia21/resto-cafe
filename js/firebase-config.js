@@ -7,6 +7,7 @@ const firebaseConfig = {
     // 4. Copy the config object below:
     apiKey: "AIzaSyBG33egBBScJqr9a0nReDMCUdPw7lsde_U",
     authDomain: "caferesto-94e83.firebaseapp.com",
+    databaseURL: "https://caferesto-94e83-default-rtdb.firebaseio.com", // Added automatically
     projectId: "caferesto-94e83",
     storageBucket: "caferesto-94e83.firebasestorage.app",
     messagingSenderId: "95176752035",
