@@ -10,6 +10,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/styles.css">
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <script>
+        if (window.netlifyIdentity) {
+            window.netlifyIdentity.on("init", user => {
+                if (!user) {
+                    window.netlifyIdentity.on("login", () => {
+                        document.location.href = "/admin/";
+                    });
+                }
+            });
+        }
+        // Redirect to admin if coming from an invite link
+        if (window.location.hash.includes("recovery_token") ||
+            window.location.hash.includes("invite_token") ||
+            window.location.hash.includes("access_token")) {
+            window.location.href = "/admin/" + window.location.hash;
+        }
+    </script>
 </head>
 
 <body>
