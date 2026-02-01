@@ -101,7 +101,21 @@ window.addToCart = (id, name, price) => {
         cart.push({ id, name, price, quantity: 1 });
     }
     updateCartUI();
+    showToast(`Added ${name} to order`);
 };
+
+function showToast(message) {
+    const toast = document.getElementById('toast');
+    const toastMsg = toast.querySelector('span');
+    toastMsg.innerText = message;
+
+    toast.classList.add('show');
+
+    // Hide after 2 seconds
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 2000);
+}
 
 function renderCart() {
     cartItemsList.innerHTML = '';
