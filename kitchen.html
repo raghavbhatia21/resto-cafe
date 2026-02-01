@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kitchen Dashboard | Caferesto</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .kitchen-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .order-card {
+            padding: 1.5rem;
+            border-left: 5px solid var(--primary);
+            position: relative;
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 0.5rem;
+        }
+
+        .table-no {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .order-time {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .order-items {
+            list-style: none;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .item-qty {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0 0.5rem;
+            border-radius: 4px;
+            margin-right: 0.5rem;
+        }
+
+        .complete-btn {
+            margin-top: 1.5rem;
+            width: 100%;
+            background: var(--accent-starter);
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 700;
+            transition: var(--transition);
+        }
+
+        .empty-state {
+            grid-column: 1/-1;
+            text-align: center;
+            padding: 5rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1 class="logo">Kitchen Dashboard</h1>
+            <nav style="margin-top: 1rem;">
+                <a href="admin/index.html" style="color: var(--primary); text-decoration: none; margin-right: 2rem;"><i
+                        class="fas fa-cog"></i> Admin</a>
+                <a href="#" onclick="logout()" style="color: var(--accent-main); text-decoration: none;"><i
+                        class="fas fa-sign-out-alt"></i> Logout</a>
+            </nav>
+        </header>
+
+        <div id="orders-container" class="kitchen-grid">
+            <div class="empty-state">
+                <i class="fas fa-utensils fa-4x" style="margin-bottom: 1rem"></i>
+                <p>No active orders. Relax and wait for the magic!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+    <script src="js/firebase-config.js"></script>
+    <script>
+        firebase.auth().onAuthStateChanged((user) => {
+            if (!user) window.location.href = 'admin/login.html';
+        });
+        function logout() {
+            firebase.auth().signOut().then(() => window.location.href = 'admin/login.html');
+        }
+    </script>
+    <script src="js/kitchen.js"></script>
+</body>
+
+</html>

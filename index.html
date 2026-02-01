@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caferesto | Digital Menu</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1 class="logo">Caferesto</h1>
+            <p style="color: var(--text-muted)">Crafting flavors, one order at a time.</p>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab-btn active" data-category="starter">Starters</button>
+            <button class="tab-btn" data-category="main">Main Course</button>
+            <button class="tab-btn" data-category="drinks">Drinks</button>
+        </nav>
+
+        <main id="menu-container" class="menu-grid">
+            <!-- Items injected by JS -->
+            <div class="loading" style="grid-column: 1/-1; text-align: center; padding: 3rem;">
+                <i class="fas fa-circle-notch fa-spin fa-3x" style="color: var(--primary)"></i>
+                <p style="margin-top: 1rem;">Loading your delicious menu...</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- Floating Cart Trigger -->
+    <div id="cart-trigger">
+        <i class="fas fa-shopping-basket"></i>
+        <div class="cart-count">0</div>
+    </div>
+
+    <!-- Cart Modal -->
+    <div id="cart-modal" class="modal-overlay">
+        <div class="modal-content glass">
+            <div class="modal-header">
+                <h2>Your Order</h2>
+                <button id="close-cart"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="cart-items-list">
+                <!-- Items here -->
+            </div>
+            <div class="cart-summary">
+                <div class="table-input-group">
+                    <label for="table-no">Table Number:</label>
+                    <input type="number" id="table-no" placeholder="e.g. 5" min="1">
+                </div>
+                <div class="total-row">
+                    <span>Total Amount:</span>
+                    <span id="cart-total">₹0</span>
+                </div>
+                <button id="place-order-btn" class="add-btn"
+                    style="background: var(--primary); color: white; margin-top: 1rem;">PLACE ORDER</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+    <script src="js/firebase-config.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>

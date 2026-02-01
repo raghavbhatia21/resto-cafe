@@ -1,0 +1,20 @@
+backend:
+  name: git-gateway
+  branch: main # Ensure this matches your default branch
+
+media_folder: "assets/images"
+public_folder: "../assets/images"
+
+collections:
+  - name: "menu"
+    label: "Menu Items"
+    folder: "content/menu"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Item Name", name: "title", widget: "string" }
+      - { label: "Category", name: "category", widget: "select", options: ["starter", "main", "drinks"] }
+      - { label: "Price (INR)", name: "price", widget: "number" }
+      - { label: "Description", name: "description", widget: "text" }
+      - { label: "Image", name: "image", widget: "image", required: false }
+      - { label: "Available", name: "available", widget: "boolean", default: true }

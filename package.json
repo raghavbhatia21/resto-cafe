@@ -1,0 +1,13 @@
+{
+    "name": "caferesto-digital-menu",
+    "version": "1.0.0",
+    "description": "Digital Menu for Caferesto",
+    "main": "js/app.js",
+    "scripts": {
+        "build": "node build.js"
+    },
+    "dependencies": {
+        "gray-matter": "^4.0.3",
+        "marked": "^11.1.1"
+    }
+}
