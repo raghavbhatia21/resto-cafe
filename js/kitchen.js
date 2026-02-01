@@ -1,9 +1,15 @@
 const ordersContainer = document.getElementById('orders-container');
+const tablesContainer = document.getElementById('tables-container');
 
 // Listen for orders
 db.ref('orders').on('value', (snapshot) => {
     const orders = snapshot.val();
     renderOrders(orders);
+});
+
+// Listen for tables
+db.ref('tables').on('value', (snapshot) => {
+    renderTables(snapshot.val());
 });
 
 function renderOrders(orders) {
@@ -48,8 +54,50 @@ function renderOrders(orders) {
     });
 }
 
+function renderTables(tables) {
+    if (!tables) {
+        tablesContainer.innerHTML = '<p style="color: var(--text-muted)">No active tables.</p>';
+        return;
+    }
+
+    tablesContainer.innerHTML = '';
+
+    Object.entries(tables).forEach(([id, data]) => {
+        if (data.status === 'occupied') {
+            const tableCard = document.createElement('div');
+            tableCard.className = 'order-card glass'; // Reuse style
+            tableCard.style.borderLeftColor = 'var(--accent-drinks)'; // Blue for tables
+
+            const time = new Date(data.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            tableCard.innerHTML = `
+                <div class="order-header">
+                    <span class="table-no" style="color: white; font-size: 1.2rem;">${id.replace('table_', 'Table ')}</span>
+                    <span class="order-time">${time}</span>
+                </div>
+                <p style="color: var(--text-muted); margin-bottom: 1rem;">Occupied</p>
+                <button class="complete-btn" style="background: var(--accent-main);" onclick="releaseTable('${id}')">RELEASE TABLE</button>
+            `;
+            tablesContainer.appendChild(tableCard);
+        }
+    });
+
+    if (tablesContainer.innerHTML === '') {
+        tablesContainer.innerHTML = '<p style="color: var(--text-muted)">All tables are free.</p>';
+    }
+}
+
 window.completeOrder = (id) => {
     if (confirm('Mark this order as complete?')) {
         db.ref('orders/' + id).remove();
+    }
+};
+
+window.releaseTable = (tableId) => {
+    if (confirm(`Release ${tableId.replace('_', ' ')}? This will allow new customers to use it.`)) {
+        db.ref('tables/' + tableId).update({
+            status: 'free',
+            sessionId: null
+        });
     }
 };

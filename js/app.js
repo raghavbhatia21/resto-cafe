@@ -1,5 +1,7 @@
 let cart = [];
 let currentCategory = 'starter';
+let currentTable = null;
+let sessionId = null;
 
 // DOM Elements
 const menuContainer = document.getElementById('menu-container');
@@ -14,9 +16,11 @@ const placeOrderBtn = document.getElementById('place-order-btn');
 const tableNoInput = document.getElementById('table-no');
 
 // Initialize App
+// Initialize App
 function init() {
     loadMenu();
     setupListeners();
+    checkSession();
 }
 
 // Load Menu from Firebase
@@ -90,6 +94,80 @@ function setupListeners() {
     });
 
     placeOrderBtn.addEventListener('click', placeOrder);
+
+    document.getElementById('start-order-btn').addEventListener('click', handleTableSelection);
+}
+
+// Session & Table Locking Logic
+function checkSession() {
+    const storedTable = localStorage.getItem('caferesto_table');
+    const storedSession = localStorage.getItem('caferesto_session');
+
+    if (storedTable && storedSession) {
+        // Verify with Firebase if this session is still valid
+        db.ref('tables/table_' + storedTable).once('value').then(snapshot => {
+            const data = snapshot.val();
+            if (data && data.status === 'occupied' && data.sessionId === storedSession) {
+                // Valid session
+                currentTable = storedTable;
+                sessionId = storedSession;
+                document.getElementById('welcome-modal').classList.remove('active');
+                console.log(`Resumed session for Table ${currentTable}`);
+            } else {
+                // Session invalid/expired
+                localStorage.removeItem('caferesto_table');
+                localStorage.removeItem('caferesto_session');
+                document.getElementById('welcome-modal').classList.add('active');
+            }
+        });
+    } else {
+        document.getElementById('welcome-modal').classList.add('active');
+    }
+}
+
+function handleTableSelection() {
+    const input = document.getElementById('welcome-table-no');
+    const errorMsg = document.getElementById('table-error');
+    const tableNo = input.value;
+
+    if (!tableNo || tableNo < 1) {
+        errorMsg.innerText = "Please enter a valid table number";
+        errorMsg.style.display = 'block';
+        return;
+    }
+
+    const newSessionId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
+    const tableRef = db.ref('tables/table_' + tableNo);
+
+    tableRef.once('value').then(snapshot => {
+        const data = snapshot.val();
+
+        if (data && data.status === 'occupied') {
+            // Check if it's OUR session (maybe page reload/reopen)
+            if (data.sessionId === localStorage.getItem('caferesto_session')) {
+                // Re-attach
+                currentTable = tableNo;
+                sessionId = data.sessionId;
+                document.getElementById('welcome-modal').classList.remove('active');
+            } else {
+                errorMsg.innerText = `Table ${tableNo} is currently occupied.`;
+                errorMsg.style.display = 'block';
+            }
+        } else {
+            // Table is free - Lock it!
+            tableRef.set({
+                status: 'occupied',
+                sessionId: newSessionId,
+                timestamp: Date.now()
+            }).then(() => {
+                currentTable = tableNo;
+                sessionId = newSessionId;
+                localStorage.setItem('caferesto_table', currentTable);
+                localStorage.setItem('caferesto_session', sessionId);
+                document.getElementById('welcome-modal').classList.remove('active');
+            });
+        }
+    });
 }
 
 // Cart Logic
@@ -164,10 +242,10 @@ function updateCartUI() {
 }
 
 // Place Order
+// Place Order
 function placeOrder() {
-    const tableNo = tableNoInput.value;
-    if (!tableNo) {
-        alert('Please enter your table number!');
+    if (!currentTable) {
+        alert("Error: No table selected. Please refresh.");
         return;
     }
 
@@ -177,10 +255,11 @@ function placeOrder() {
     }
 
     const order = {
-        tableNo,
+        tableNo: currentTable,
         items: cart,
         timestamp: Date.now(),
-        status: 'pending'
+        status: 'pending',
+        sessionId: sessionId
     };
 
     db.ref('orders').push(order).then(() => {

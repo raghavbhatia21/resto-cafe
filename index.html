@@ -69,10 +69,6 @@
                 <!-- Items here -->
             </div>
             <div class="cart-summary">
-                <div class="table-input-group">
-                    <label for="table-no">Table Number:</label>
-                    <input type="number" id="table-no" placeholder="e.g. 5" min="1">
-                </div>
                 <div class="total-row">
                     <span>Total Amount:</span>
                     <span id="cart-total">₹0</span>
@@ -87,6 +83,30 @@
     <div id="toast" class="toast">
         <i class="fas fa-check-circle"></i>
         <span>Item added to cart!</span>
+    </div>
+
+    <!-- Welcome / Table Selection Modal -->
+    <div id="welcome-modal" class="modal-overlay active" style="z-index: 9999;">
+        <div class="modal-content glass" style="text-align: center; max-width: 400px;">
+            <div class="modal-header" style="justify-content: center; margin-bottom: 1rem;">
+                <h1 class="logo" style="font-size: 2rem;">Welcome!</h1>
+            </div>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">Please enter your table number to start ordering.
+            </p>
+
+            <div class="table-input-group" style="margin-top: 0; background: none; padding: 0;">
+                <input type="number" id="welcome-table-no" placeholder="Table #" min="1"
+                    style="font-size: 1.5rem; padding: 1rem;">
+            </div>
+
+            <p id="table-error" style="color: var(--accent-main); margin-top: 1rem; display: none; font-weight: 600;">
+            </p>
+
+            <button id="start-order-btn" class="add-btn"
+                style="background: var(--primary); color: white; margin-top: 2rem; padding: 1rem; font-size: 1.1rem;">
+                START ORDERING
+            </button>
+        </div>
     </div>
 
     <!-- Firebase SDKs -->

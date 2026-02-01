@@ -418,6 +418,11 @@ header {
     opacity: 1;
 }
 
-.toast i {
-    font-size: 1.1rem;
+font-size: 1.1rem;
+}
+
+/* Welcome Modal Specifics */
+#welcome-modal .modal-content {
+    border: 2px solid var(--primary);
+    box-shadow: 0 0 30px rgba(245, 158, 11, 0.2);
 }
