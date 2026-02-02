@@ -34,7 +34,8 @@ files.forEach(file => {
             category: data.category,
             description: data.description || '',
             image: data.image || '',
-            available: data.available
+            available: data.available,
+            variants: data.variants || []
         };
     }
 });

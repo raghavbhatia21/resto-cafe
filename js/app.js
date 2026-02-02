@@ -54,18 +54,48 @@ function renderMenu(items) {
     filteredItems.forEach(([id, item]) => {
         const itemEl = document.createElement('div');
         itemEl.className = 'menu-item glass';
+
+        let actionsHtml = '';
+        if (item.variants && item.variants.length > 0) {
+            // Variant selection
+            const options = item.variants.map(v => `<option value="${v.name}" data-price="${v.price}">${v.name} - ₹${v.price}</option>`).join('');
+            actionsHtml = `
+                <div class="variant-selector">
+                    <select id="variant-${id}" class="glass-select">
+                        ${options}
+                    </select>
+                </div>
+                <button class="add-btn" onclick="addVariantToCart('${id}', '${item.name}')">Add to Order</button>
+            `;
+        } else {
+            // Direct add
+            actionsHtml = `<button class="add-btn" onclick="addToCart('${id}', '${item.name}', ${item.price})">Add to Order</button>`;
+        }
+
         itemEl.innerHTML = `
             <img src="${item.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400'}" alt="${item.name}" class="item-img">
             <div class="item-info">
                 <span class="item-name">${item.name}</span>
-                <span class="item-price">₹${item.price}</span>
+                <span class="item-price">${item.variants && item.variants.length > 0 ? 'From ₹' + Math.min(...item.variants.map(v => v.price)) : '₹' + item.price}</span>
             </div>
             <p class="item-desc">${item.description}</p>
-            <button class="add-btn" onclick="addToCart('${id}', '${item.name}', ${item.price})">Add to Order</button>
+            <div class="item-actions">
+                ${actionsHtml}
+            </div>
         `;
         menuContainer.appendChild(itemEl);
     });
 }
+
+// Helper for variants
+window.addVariantToCart = (id, baseName) => {
+    const selector = document.getElementById(`variant-${id}`);
+    const selectedOption = selector.options[selector.selectedIndex];
+    const variantName = selectedOption.value;
+    const variantPrice = parseFloat(selectedOption.dataset.price);
+
+    addToCart(id, `${baseName} (${variantName})`, variantPrice, variantName);
+};
 
 // Listeners
 function setupListeners() {
@@ -181,15 +211,24 @@ function handleTableSelection() {
 }
 
 // Cart Logic
-window.addToCart = (id, name, price) => {
-    const existing = cart.find(item => item.id === id);
+window.addToCart = (id, displayName, price, variant = null) => {
+    const cartId = variant ? `${id}-${variant}` : id;
+    const existing = cart.find(item => item.cartId === cartId);
+
     if (existing) {
         existing.quantity += 1;
     } else {
-        cart.push({ id, name, price, quantity: 1 });
+        cart.push({
+            id,
+            cartId,
+            name: displayName,
+            price,
+            quantity: 1,
+            variant: variant
+        });
     }
     updateCartUI();
-    showToast(`Added ${name} to order`);
+    showToast(`Added ${displayName} to order`);
 };
 
 function showToast(message) {
