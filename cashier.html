@@ -4,33 +4,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kitchen Dashboard | Caferesto</title>
+    <title>Cash Counter | Caferesto</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/styles.css">
     <style>
-        .kitchen-grid {
+        .cashier-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
             gap: 1.5rem;
             margin-top: 2rem;
         }
 
-        .order-card {
+        .bill-card {
             padding: 1.5rem;
-            border-left: 5px solid var(--primary);
+            border-left: 5px solid var(--accent-drinks);
             position: relative;
+            display: flex;
+            flex-direction: column;
         }
 
-        .order-header {
+        .bill-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1rem;
             border-bottom: 1px solid var(--glass-border);
-            padding-bottom: 0.5rem;
+            padding-bottom: 1rem;
         }
 
         .table-no {
@@ -39,40 +41,58 @@
             color: var(--primary);
         }
 
-        .order-time {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-
-        .order-items {
+        .bill-items {
             list-style: none;
+            margin-bottom: 1.5rem;
+            max-height: 200px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
         }
 
-        .order-item {
+        .bill-item {
             display: flex;
             justify-content: space-between;
             margin-bottom: 0.5rem;
-            font-weight: 600;
+            font-size: 0.9rem;
         }
 
         .item-qty {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 0 0.5rem;
-            border-radius: 4px;
+            font-weight: 700;
+            color: var(--primary);
             margin-right: 0.5rem;
         }
 
-        .complete-btn {
-            margin-top: 1.5rem;
+        .bill-footer {
+            margin-top: auto;
+            border-top: 1px solid var(--glass-border);
+            padding-top: 1rem;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .paid-btn {
             width: 100%;
             background: var(--accent-starter);
             color: white;
             border: none;
-            padding: 0.75rem;
+            padding: 1rem;
             border-radius: 0.5rem;
             cursor: pointer;
             font-weight: 700;
+            font-size: 1rem;
             transition: var(--transition);
+        }
+
+        .paid-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
 
         .empty-state {
@@ -87,30 +107,25 @@
 <body>
     <div class="container">
         <header>
-            <h1 class="logo">Kitchen Dashboard</h1>
-            <nav style="margin-top: 1rem;">
-                <a href="cashier.html"
-                    style="color: var(--accent-drinks); text-decoration: none; margin-right: 2rem;"><i
-                        class="fas fa-file-invoice-dollar"></i> Cash Counter</a>
-                <a href="admin/index.html" style="color: var(--primary); text-decoration: none; margin-right: 2rem;"><i
-                        class="fas fa-cog"></i> Admin</a>
-                <a href="#" onclick="logout()" style="color: var(--accent-main); text-decoration: none;"><i
-                        class="fas fa-sign-out-alt"></i> Logout</a>
-            </nav>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h1 class="logo">Cash Counter</h1>
+                    <p style="color: var(--text-muted)">Manage payments and settlement.</p>
+                </div>
+                <nav>
+                    <a href="kitchen.html" style="color: var(--primary); text-decoration: none; margin-right: 2rem;"><i
+                            class="fas fa-utensils"></i> Kitchen</a>
+                    <a href="#" onclick="logout()" style="color: var(--accent-main); text-decoration: none;"><i
+                            class="fas fa-sign-out-alt"></i> Logout</a>
+                </nav>
+            </div>
         </header>
 
-        <div id="orders-container" class="kitchen-grid">
+        <div id="bills-container" class="cashier-grid">
             <div class="empty-state">
-                <i class="fas fa-utensils fa-4x" style="margin-bottom: 1rem"></i>
-                <p>No active orders. Relax and wait for the magic!</p>
+                <i class="fas fa-file-invoice-dollar fa-4x" style="margin-bottom: 1rem"></i>
+                <p>No active bills. Happy hunting!</p>
             </div>
-        </div>
-
-        <h2
-            style="margin-top: 3rem; margin-bottom: 1rem; border-top: 1px solid var(--glass-border); padding-top: 2rem;">
-            Active Tables</h2>
-        <div id="tables-container" class="kitchen-grid">
-            <!-- Tables will be injected here -->
         </div>
     </div>
 
@@ -128,7 +143,7 @@
             firebase.auth().signOut().then(() => window.location.href = 'admin/login.html');
         }
     </script>
-    <script src="js/kitchen.js"></script>
+    <script src="js/cashier.js"></script>
 </body>
 
 </html>

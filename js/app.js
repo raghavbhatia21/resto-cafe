@@ -13,7 +13,7 @@ const closeCart = document.getElementById('close-cart');
 const cartItemsList = document.getElementById('cart-items-list');
 const cartTotal = document.getElementById('cart-total');
 const placeOrderBtn = document.getElementById('place-order-btn');
-const tableNoInput = document.getElementById('table-no');
+const tableNoInput = document.getElementById('welcome-table-no');
 
 // Initialize App
 // Initialize App
@@ -155,16 +155,26 @@ function handleTableSelection() {
             }
         } else {
             // Table is free - Lock it!
-            tableRef.set({
-                status: 'occupied',
-                sessionId: newSessionId,
-                timestamp: Date.now()
-            }).then(() => {
-                currentTable = tableNo;
-                sessionId = newSessionId;
-                localStorage.setItem('caferesto_table', currentTable);
-                localStorage.setItem('caferesto_session', sessionId);
-                document.getElementById('welcome-modal').classList.remove('active');
+            const sessionInit = {
+                tableNo: tableNo,
+                status: 'active',
+                startTime: Date.now(),
+                total: 0,
+                items: []
+            };
+
+            db.ref('sessions/' + newSessionId).set(sessionInit).then(() => {
+                tableRef.set({
+                    status: 'occupied',
+                    sessionId: newSessionId,
+                    timestamp: Date.now()
+                }).then(() => {
+                    currentTable = tableNo;
+                    sessionId = newSessionId;
+                    localStorage.setItem('caferesto_table', currentTable);
+                    localStorage.setItem('caferesto_session', sessionId);
+                    document.getElementById('welcome-modal').classList.remove('active');
+                });
             });
         }
     });
@@ -262,12 +272,34 @@ function placeOrder() {
         sessionId: sessionId
     };
 
+    // Calculate order total
+    const orderTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+    // 1. Send to Kitchen
     db.ref('orders').push(order).then(() => {
-        alert('Order placed successfully! The kitchen is onto it.');
-        cart = [];
-        updateCartUI();
-        cartModal.classList.remove('active');
-        tableNoInput.value = '';
+        // 2. Update Session History for Billing
+        const sessionRef = db.ref('sessions/' + sessionId);
+        sessionRef.once('value').then(snapshot => {
+            const sessionData = snapshot.val() || {
+                tableNo: currentTable,
+                items: [],
+                total: 0,
+                status: 'active',
+                startTime: Date.now()
+            };
+
+            sessionData.items = [...(sessionData.items || []), ...cart];
+            sessionData.total = (sessionData.total || 0) + orderTotal;
+            sessionData.lastOrderTime = Date.now();
+
+            sessionRef.set(sessionData).then(() => {
+                alert('Order placed successfully! The kitchen is onto it.');
+                cart = [];
+                updateCartUI();
+                cartModal.classList.remove('active');
+                if (tableNoInput) tableNoInput.value = '';
+            });
+        });
     }).catch(err => {
         console.error(err);
         alert('Error placing order. Please check your connection.');
