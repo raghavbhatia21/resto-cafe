@@ -1,0 +1,16 @@
+{
+    "rules": {
+        ".read": true,
+        ".write": true,
+        "sessions": {
+            ".indexOn": [
+                "status"
+            ]
+        },
+        "orders": {
+            ".indexOn": [
+                "timestamp"
+            ]
+        }
+    }
+}

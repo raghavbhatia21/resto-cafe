@@ -272,37 +272,54 @@ function placeOrder() {
         sessionId: sessionId
     };
 
-    // Calculate order total
-    const orderTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    // Verify table is still active
+    db.ref('tables/table_' + currentTable).once('value').then(snapshot => {
+        const tableData = snapshot.val();
 
-    // 1. Send to Kitchen
-    db.ref('orders').push(order).then(() => {
-        // 2. Update Session History for Billing
-        const sessionRef = db.ref('sessions/' + sessionId);
-        sessionRef.once('value').then(snapshot => {
-            const sessionData = snapshot.val() || {
-                tableNo: currentTable,
-                items: [],
-                total: 0,
-                status: 'active',
-                startTime: Date.now()
-            };
+        if (!tableData || tableData.status !== 'occupied' || tableData.sessionId !== sessionId) {
+            alert('Your session has expired or the table is no longer active. Please refresh.');
+            // Optional: reset local state
+            localStorage.removeItem('caferesto_table');
+            localStorage.removeItem('caferesto_session');
+            window.location.reload();
+            return;
+        }
 
-            sessionData.items = [...(sessionData.items || []), ...cart];
-            sessionData.total = (sessionData.total || 0) + orderTotal;
-            sessionData.lastOrderTime = Date.now();
+        // Calculate order total
+        const orderTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
-            sessionRef.set(sessionData).then(() => {
-                alert('Order placed successfully! The kitchen is onto it.');
-                cart = [];
-                updateCartUI();
-                cartModal.classList.remove('active');
-                if (tableNoInput) tableNoInput.value = '';
+        // 1. Send to Kitchen
+        db.ref('orders').push(order).then(() => {
+            // 2. Update Session History for Billing
+            const sessionRef = db.ref('sessions/' + sessionId);
+            sessionRef.once('value').then(snapshot => {
+                const sessionData = snapshot.val() || {
+                    tableNo: currentTable,
+                    items: [],
+                    total: 0,
+                    status: 'active',
+                    startTime: Date.now()
+                };
+
+                sessionData.items = [...(sessionData.items || []), ...cart];
+                sessionData.total = (sessionData.total || 0) + orderTotal;
+                sessionData.lastOrderTime = Date.now();
+
+                sessionRef.set(sessionData).then(() => {
+                    alert('Order placed successfully! The kitchen is onto it.');
+                    cart = [];
+                    updateCartUI();
+                    cartModal.classList.remove('active');
+                    if (tableNoInput) tableNoInput.value = '';
+                });
             });
+        }).catch(err => {
+            console.error(err);
+            alert('Error placing order. Please check your connection.');
         });
     }).catch(err => {
-        console.error(err);
-        alert('Error placing order. Please check your connection.');
+        console.error("Table verification failed:", err);
+        alert("Unable to verify table session. Please try again.");
     });
 }
 
