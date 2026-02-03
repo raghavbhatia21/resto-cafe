@@ -13,9 +13,38 @@
     <style>
         .cashier-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 1.5rem;
             margin-top: 2rem;
+        }
+
+        @media (max-width: 640px) {
+            .cashier-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .bill-card {
+                padding: 1.25rem !important;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 1.5rem;
+                text-align: center;
+            }
+
+            .header-nav {
+                justify-content: center;
+                width: 100%;
+                background: rgba(255, 255, 255, 0.05);
+                padding: 1rem;
+                border-radius: 1rem;
+            }
+
+            .header-nav a {
+                margin: 0 1rem !important;
+            }
         }
 
         .bill-card {
@@ -107,12 +136,12 @@
 <body>
     <div class="container">
         <header>
-            <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="header-content" style="display: flex; justify-content: space-between; align-items: center;">
                 <div>
                     <h1 class="logo">Cash Counter</h1>
                     <p style="color: var(--text-muted)">Manage payments and settlement.</p>
                 </div>
-                <nav>
+                <nav class="header-nav" style="display: flex;">
                     <a href="kitchen.html" style="color: var(--primary); text-decoration: none; margin-right: 2rem;"><i
                             class="fas fa-utensils"></i> Kitchen</a>
                     <a href="#" onclick="logout()" style="color: var(--accent-main); text-decoration: none;"><i
