@@ -137,6 +137,7 @@ function setupListeners() {
 }
 
 // Session & Table Locking Logic
+// Session & Table Locking Logic
 function checkSession() {
     const storedTable = localStorage.getItem('caferesto_table');
     const storedSession = localStorage.getItem('caferesto_session');
@@ -151,6 +152,7 @@ function checkSession() {
                 sessionId = storedSession;
                 document.getElementById('welcome-modal').classList.remove('active');
                 console.log(`Resumed session for Table ${currentTable}`);
+                watchSessionStatus();
             } else {
                 // Session invalid/expired
                 localStorage.removeItem('caferesto_table');
@@ -166,6 +168,7 @@ function checkSession() {
 function handleTableSelection() {
     const input = document.getElementById('welcome-table-no');
     const errorMsg = document.getElementById('table-error');
+    const startBtn = document.getElementById('start-order-btn');
     const tableNo = input.value;
 
     if (!tableNo || tableNo < 1) {
@@ -174,6 +177,17 @@ function handleTableSelection() {
         return;
     }
 
+    // UX Enhancement: Loading State
+    const originalBtnContent = startBtn.innerHTML;
+    startBtn.disabled = true;
+    startBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> VERIFYING...';
+    errorMsg.style.display = 'none';
+
+    const resetBtn = () => {
+        startBtn.disabled = false;
+        startBtn.innerHTML = originalBtnContent;
+    };
+
     const newSessionId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
     const tableRef = db.ref('tables/table_' + tableNo);
 
@@ -181,15 +195,19 @@ function handleTableSelection() {
         const data = snapshot.val();
 
         if (data && data.status === 'occupied') {
+            const existingSession = localStorage.getItem('caferesto_session');
             // Check if it's OUR session (maybe page reload/reopen)
-            if (data.sessionId === localStorage.getItem('caferesto_session')) {
+            if (data.sessionId === existingSession) {
                 // Re-attach
                 currentTable = tableNo;
                 sessionId = data.sessionId;
                 document.getElementById('welcome-modal').classList.remove('active');
+                watchSessionStatus();
+                resetBtn();
             } else {
                 errorMsg.innerText = `Table ${tableNo} is currently occupied.`;
                 errorMsg.style.display = 'block';
+                resetBtn();
             }
         } else {
             // Table is free - Lock it!
@@ -212,8 +230,37 @@ function handleTableSelection() {
                     localStorage.setItem('caferesto_table', currentTable);
                     localStorage.setItem('caferesto_session', sessionId);
                     document.getElementById('welcome-modal').classList.remove('active');
+                    watchSessionStatus();
+                    resetBtn();
                 });
+            }).catch(err => {
+                console.error(err);
+                errorMsg.innerText = "Connection error. Please try again.";
+                errorMsg.style.display = 'block';
+                resetBtn();
             });
+        }
+    }).catch(err => {
+        console.error(err);
+        errorMsg.innerText = "Error connecting to server.";
+        errorMsg.style.display = 'block';
+        resetBtn();
+    });
+}
+
+function watchSessionStatus() {
+    if (!currentTable || !sessionId) return;
+
+    const tableRef = db.ref('tables/table_' + currentTable);
+    tableRef.on('value', snapshot => {
+        const data = snapshot.val();
+        if (!data || data.status !== 'occupied' || data.sessionId !== sessionId) {
+            // Table was released or session changed
+            tableRef.off(); // Stop listening
+            alert("Your session has ended or the table has been released. Redirecting...");
+            localStorage.removeItem('caferesto_table');
+            localStorage.removeItem('caferesto_session');
+            window.location.reload();
         }
     });
 }
