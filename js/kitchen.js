@@ -48,7 +48,19 @@ function renderOrders(orders) {
             <ul class="order-items">
                 ${itemsHtml}
             </ul>
-            <button class="complete-btn" onclick="completeOrder('${id}')">MARK AS READY</button>
+            <div class="order-actions">
+                <button class="complete-btn" onclick="completeOrder('${id}')">MARK AS READY</button>
+                <div class="wa-actions" style="margin-top: 0.5rem; display: flex; gap: 0.5rem;">
+                    <button class="wa-btn" style="background: #25D366; color: white; border: none; padding: 0.5rem; border-radius: 5px; flex: 1; cursor: pointer;" 
+                        onclick="sendWhatsAppUpdate('${order.customerPhone}', 'preparing', '${order.tableNo}')">
+                        <i class="fab fa-whatsapp"></i> PREPARING
+                    </button>
+                    <button class="wa-btn" style="background: #25D366; color: white; border: none; padding: 0.5rem; border-radius: 5px; flex: 1; cursor: pointer;" 
+                        onclick="sendWhatsAppUpdate('${order.customerPhone}', 'ready', '${order.tableNo}')">
+                        <i class="fab fa-whatsapp"></i> READY
+                    </button>
+                </div>
+            </div>
         `;
         ordersContainer.appendChild(orderCard);
     });
@@ -100,4 +112,21 @@ window.releaseTable = (tableId) => {
             sessionId: null
         });
     }
+};
+
+window.sendWhatsAppUpdate = (phone, status, tableNo) => {
+    if (!phone) {
+        alert("No phone number associated with this order.");
+        return;
+    }
+
+    let message = "";
+    if (status === 'preparing') {
+        message = encodeURIComponent(`👨‍🍳 *Update from Caferesto!*\n\nTable: ${tableNo}\nYour order is now being *prepared* in the kitchen. Just a few more minutes!`);
+    } else if (status === 'ready') {
+        message = encodeURIComponent(`✅ *Update from Caferesto!*\n\nTable: ${tableNo}\nGood news! Your order is *ready* and will be served shortly. Bon appétit! 🍽️`);
+    }
+
+    const waLink = `https://wa.me/91${phone}?text=${message}`;
+    window.open(waLink, '_blank');
 };

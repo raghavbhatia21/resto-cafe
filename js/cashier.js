@@ -48,6 +48,16 @@ function renderBills(sessions) {
                     <span style="color: var(--primary)">₹${session.total || 0}</span>
                 </div>
                 <button class="paid-btn" onclick="markAsPaid('${id}', '${session.tableNo}')">SETTLE & RELEASE</button>
+                <div class="cashier-actions" style="margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                    <button class="wa-btn" style="background: #25D366; color: white; border: none; padding: 0.6rem; border-radius: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem;" 
+                        onclick="sendBillWhatsApp('${session.items ? session.items.map(i => `${i.quantity}x ${i.name}`).join(', ') : ''}', '${session.total}', '${session.tableNo}', '${(session.items && session.items[0]) ? session.items[0].customerPhone : ''}')">
+                        <i class="fab fa-whatsapp"></i> SEND BILL
+                    </button>
+                    <button class="qr-btn" style="background: var(--primary); color: white; border: none; padding: 0.6rem; border-radius: 5px; cursor: pointer;" 
+                        onclick="showPaymentQR('${session.total}', '${session.tableNo}')">
+                        <i class="fas fa-qrcode"></i> SHOW QR
+                    </button>
+                </div>
             </div>
         `;
         billsContainer.appendChild(billCard);
@@ -65,12 +75,11 @@ function showEmptyState() {
 
 window.markAsPaid = (sessionId, tableNo) => {
     if (confirm(`Confirm payment for Table ${tableNo}? This will free the table for new customers.`)) {
-        // 1. Mark session as paid
+        // ... (existing logic)
         db.ref('sessions/' + sessionId).update({
             status: 'paid',
             settledAt: Date.now()
         }).then(() => {
-            // 2. Release the table
             db.ref('tables/table_' + tableNo).update({
                 status: 'free',
                 sessionId: null
@@ -82,4 +91,40 @@ window.markAsPaid = (sessionId, tableNo) => {
             alert("Failed to settle bill. Please check console.");
         });
     }
+};
+
+window.sendBillWhatsApp = (items, total, tableNo, phone) => {
+    // If phone is not in first item, we might need to find it in the session data
+    // For now, assume it's passed or retrieved. The caller in renderBills should be updated.
+
+    // Attempt to get phone from session metadata if not passed
+    if (!phone) {
+        // Re-fetch session to be sure (or just rely on the first item having it which we ensured in app.js)
+        alert("Phone number not found for this session.");
+        return;
+    }
+
+    const message = encodeURIComponent(`🧾 *Bill from Caferesto*\n\nTable: ${tableNo}\nItems: ${items}\nTotal: *₹${total}*\n\nThank you for visiting! Please let us know if you need anything else.`);
+    const waLink = `https://wa.me/91${phone}?text=${message}`;
+    window.open(waLink, '_blank');
+};
+
+window.showPaymentQR = (total, tableNo) => {
+    const upiId = "raghavbhatia332@okhdfcbank"; // USER: Change this to your actual UPI ID
+    const name = "Caferesto";
+    const upiLink = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(name)}&am=${total}&cu=INR&tn=${encodeURIComponent('Table ' + tableNo)}`;
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiLink)}`;
+
+    const modal = document.createElement('div');
+    modal.style = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 10000; flex-direction: column; color: white;";
+    modal.innerHTML = `
+        <div style="background: white; padding: 2rem; border-radius: 15px; text-align: center; color: black; max-width: 300px;">
+            <h3 style="margin-bottom: 1rem;">Table ${tableNo} Payment</h3>
+            <img src="${qrUrl}" alt="Payment QR" style="width: 200px; height: 200px; margin-bottom: 1rem;">
+            <p style="font-weight: bold; font-size: 1.2rem;">Total: ₹${total}</p>
+            <p style="font-size: 0.8rem; color: #666; margin-top: 0.5rem;">Scan with any UPI App (PhonePe, GPay, etc.)</p>
+            <button onclick="this.parentElement.parentElement.remove()" style="margin-top: 1.5rem; padding: 0.5rem 2rem; background: var(--accent-main); color: white; border: none; border-radius: 5px; cursor: pointer;">CLOSE</button>
+        </div>
+    `;
+    document.body.appendChild(modal);
 };

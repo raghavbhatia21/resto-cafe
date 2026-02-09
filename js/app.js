@@ -137,10 +137,10 @@ function setupListeners() {
 }
 
 // Session & Table Locking Logic
-// Session & Table Locking Logic
 function checkSession() {
     const storedTable = localStorage.getItem('caferesto_table');
     const storedSession = localStorage.getItem('caferesto_session');
+    const storedPhone = localStorage.getItem('caferesto_phone');
 
     if (storedTable && storedSession) {
         // Verify with Firebase if this session is still valid
@@ -150,6 +150,7 @@ function checkSession() {
                 // Valid session
                 currentTable = storedTable;
                 sessionId = storedSession;
+                window.customerPhone = storedPhone;
                 document.getElementById('welcome-modal').classList.remove('active');
                 console.log(`Resumed session for Table ${currentTable}`);
                 watchSessionStatus();
@@ -157,6 +158,7 @@ function checkSession() {
                 // Session invalid/expired
                 localStorage.removeItem('caferesto_table');
                 localStorage.removeItem('caferesto_session');
+                localStorage.removeItem('caferesto_phone');
                 document.getElementById('welcome-modal').classList.add('active');
             }
         });
@@ -167,12 +169,20 @@ function checkSession() {
 
 function handleTableSelection() {
     const input = document.getElementById('welcome-table-no');
+    const phoneInput = document.getElementById('welcome-phone');
     const errorMsg = document.getElementById('table-error');
     const startBtn = document.getElementById('start-order-btn');
     const tableNo = input.value;
+    const phone = phoneInput.value;
 
     if (!tableNo || tableNo < 1) {
         errorMsg.innerText = "Please enter a valid table number";
+        errorMsg.style.display = 'block';
+        return;
+    }
+
+    if (!phone || phone.length < 10) {
+        errorMsg.innerText = "Please enter a valid WhatsApp number";
         errorMsg.style.display = 'block';
         return;
     }
@@ -227,8 +237,10 @@ function handleTableSelection() {
                 }).then(() => {
                     currentTable = tableNo;
                     sessionId = newSessionId;
+                    window.customerPhone = phone;
                     localStorage.setItem('caferesto_table', currentTable);
                     localStorage.setItem('caferesto_session', sessionId);
+                    localStorage.setItem('caferesto_phone', phone);
                     document.getElementById('welcome-modal').classList.remove('active');
                     watchSessionStatus();
                     resetBtn();
@@ -376,7 +388,8 @@ function placeOrder() {
         items: cart,
         timestamp: Date.now(),
         status: 'pending',
-        sessionId: sessionId
+        sessionId: sessionId,
+        customerPhone: window.customerPhone || localStorage.getItem('caferesto_phone')
     };
 
     // Verify table is still active
@@ -412,7 +425,16 @@ function placeOrder() {
                 sessionData.lastOrderTime = Date.now();
 
                 sessionRef.set(sessionData).then(() => {
+                    const message = encodeURIComponent(`🍽️ *Caferesto Order Success!*\n\nTable: ${currentTable}\nItems: ${cart.map(i => `${i.quantity}x ${i.name}`).join(', ')}\nTotal: ₹${orderTotal}\n\nWe are preparing your order!`);
+                    const waLink = `https://wa.me/91${window.customerPhone || localStorage.getItem('caferesto_phone')}?text=${message}`;
+
                     alert('Order placed successfully! The kitchen is onto it.');
+
+                    // Ask to send via WhatsApp
+                    if (confirm('Would you like to receive your receipt on WhatsApp?')) {
+                        window.open(waLink, '_blank');
+                    }
+
                     cart = [];
                     updateCartUI();
                     cartModal.classList.remove('active');
