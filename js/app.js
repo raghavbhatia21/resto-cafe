@@ -425,15 +425,15 @@ function placeOrder() {
                 sessionData.lastOrderTime = Date.now();
 
                 sessionRef.set(sessionData).then(() => {
-                    const message = encodeURIComponent(`🍽️ *Caferesto Order Success!*\n\nTable: ${currentTable}\nItems: ${cart.map(i => `${i.quantity}x ${i.name}`).join(', ')}\nTotal: ₹${orderTotal}\n\nWe are preparing your order!`);
-                    const waLink = `https://wa.me/91${window.customerPhone || localStorage.getItem('caferesto_phone')}?text=${message}`;
+                    const message = `🍽️ *Caferesto Order Success!*\n\nTable: ${currentTable}\nItems: ${cart.map(i => `${i.quantity}x ${i.name}`).join(', ')}\nTotal: ₹${orderTotal}\n\nWe are preparing your order!`;
+
+                    // Automate WhatsApp Notification
+                    const customerPhone = window.customerPhone || localStorage.getItem('caferesto_phone');
+                    if (customerPhone) {
+                        window.sendWhatsAppAutomation(customerPhone, message);
+                    }
 
                     alert('Order placed successfully! The kitchen is onto it.');
-
-                    // Ask to send via WhatsApp
-                    if (confirm('Would you like to receive your receipt on WhatsApp?')) {
-                        window.open(waLink, '_blank');
-                    }
 
                     cart = [];
                     updateCartUI();

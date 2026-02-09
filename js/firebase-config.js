@@ -20,3 +20,18 @@ console.log("Firebase initialized successfully");
 
 const db = firebase.database();
 const auth = firebase.auth();
+
+// Shared WhatsApp Automation Helper
+window.sendWhatsAppAutomation = async (phone, message) => {
+    try {
+        const response = await fetch('/.netlify/functions/send-whatsapp', {
+            method: 'POST',
+            body: JSON.stringify({ to: phone, message: message })
+        });
+        const data = await response.json();
+        console.log("WhatsApp Automation Response:", data);
+        return data;
+    } catch (err) {
+        console.error("WhatsApp Automation Error:", err);
+    }
+};

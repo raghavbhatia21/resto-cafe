@@ -94,19 +94,15 @@ window.markAsPaid = (sessionId, tableNo) => {
 };
 
 window.sendBillWhatsApp = (items, total, tableNo, phone) => {
-    // If phone is not in first item, we might need to find it in the session data
-    // For now, assume it's passed or retrieved. The caller in renderBills should be updated.
-
-    // Attempt to get phone from session metadata if not passed
     if (!phone) {
-        // Re-fetch session to be sure (or just rely on the first item having it which we ensured in app.js)
         alert("Phone number not found for this session.");
         return;
     }
 
-    const message = encodeURIComponent(`🧾 *Bill from Caferesto*\n\nTable: ${tableNo}\nItems: ${items}\nTotal: *₹${total}*\n\nThank you for visiting! Please let us know if you need anything else.`);
-    const waLink = `https://wa.me/91${phone}?text=${message}`;
-    window.open(waLink, '_blank');
+    const message = `🧾 *Bill from Caferesto*\n\nTable: ${tableNo}\nItems: ${items}\nTotal: *₹${total}*\n\nThank you for visiting! Please let us know if you need anything else.`;
+
+    window.sendWhatsAppAutomation(phone, message);
+    alert(`Bill sent to WhatsApp successfully!`);
 };
 
 window.showPaymentQR = (total, tableNo) => {

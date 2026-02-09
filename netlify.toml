@@ -1,6 +1,7 @@
 [build]
   command = "npm install && node build.js"
   publish = "."
+  functions = "netlify/functions"
 
 [[redirects]]
   from = "/*"

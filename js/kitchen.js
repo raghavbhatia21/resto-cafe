@@ -122,11 +122,13 @@ window.sendWhatsAppUpdate = (phone, status, tableNo) => {
 
     let message = "";
     if (status === 'preparing') {
-        message = encodeURIComponent(`👨‍🍳 *Update from Caferesto!*\n\nTable: ${tableNo}\nYour order is now being *prepared* in the kitchen. Just a few more minutes!`);
+        message = `👨‍🍳 *Update from Caferesto!*\n\nTable: ${tableNo}\nYour order is now being *prepared* in the kitchen. Just a few more minutes!`;
     } else if (status === 'ready') {
-        message = encodeURIComponent(`✅ *Update from Caferesto!*\n\nTable: ${tableNo}\nGood news! Your order is *ready* and will be served shortly. Bon appétit! 🍽️`);
+        message = `✅ *Update from Caferesto!*\n\nTable: ${tableNo}\nGood news! Your order is *ready* and will be served shortly. Bon appétit! 🍽️`;
     }
 
-    const waLink = `https://wa.me/91${phone}?text=${message}`;
-    window.open(waLink, '_blank');
+    if (message) {
+        window.sendWhatsAppAutomation(phone, message);
+        alert(`Notification sent: ${status.toUpperCase()}`);
+    }
 };
