@@ -23,6 +23,7 @@ function init() {
     loadMenu();
     setupListeners();
     checkSession();
+    updateRequestBillVisibility();
 }
 
 // Load Menu from Firebase
@@ -124,6 +125,7 @@ function setupListeners() {
 
     cartTrigger.addEventListener('click', () => {
         renderCart();
+        updateRequestBillVisibility();
         cartModal.classList.add('active');
     });
 
@@ -132,7 +134,7 @@ function setupListeners() {
     });
 
     placeOrderBtn.addEventListener('click', placeOrder);
-
+    document.getElementById('request-bill-btn').addEventListener('click', requestBill);
     document.getElementById('start-order-btn').addEventListener('click', handleTableSelection);
 }
 
@@ -164,6 +166,25 @@ function checkSession() {
         });
     } else {
         document.getElementById('welcome-modal').classList.add('active');
+    }
+}
+
+function updateRequestBillVisibility() {
+    const btn = document.getElementById('request-bill-btn');
+    if (btn && sessionId) {
+        db.ref('sessions/' + sessionId).once('value').then(snapshot => {
+            const data = snapshot.val();
+            if (data && data.items && data.items.length > 0) {
+                btn.style.display = 'block';
+                if (data.status === 'bill_requested') {
+                    btn.disabled = true;
+                    btn.innerText = 'BILL REQUESTED';
+                    btn.style.opacity = '0.7';
+                }
+            } else {
+                btn.style.display = 'none';
+            }
+        });
     }
 }
 
@@ -422,21 +443,15 @@ function placeOrder() {
 
                 sessionData.items = [...(sessionData.items || []), ...cart];
                 sessionData.total = (sessionData.total || 0) + orderTotal;
+                sessionData.customerPhone = order.customerPhone; // Ensure phone is in session
                 sessionData.lastOrderTime = Date.now();
 
                 sessionRef.set(sessionData).then(() => {
-                    const message = `🍽️ *Caferesto Order Success!*\n\nTable: ${currentTable}\nItems: ${cart.map(i => `${i.quantity}x ${i.name}`).join(', ')}\nTotal: ₹${orderTotal}\n\nWe are preparing your order!`;
-
-                    // Automate WhatsApp Notification
-                    const customerPhone = window.customerPhone || localStorage.getItem('caferesto_phone');
-                    if (customerPhone) {
-                        window.sendWhatsAppAutomation(customerPhone, message);
-                    }
-
                     alert('Order placed successfully! The kitchen is onto it.');
 
                     cart = [];
                     updateCartUI();
+                    updateRequestBillVisibility();
                     cartModal.classList.remove('active');
                     if (tableNoInput) tableNoInput.value = '';
                     resetBtn();
@@ -452,6 +467,30 @@ function placeOrder() {
         alert("Unable to verify table session. Please try again.");
         resetBtn();
     });
+}
+
+function requestBill() {
+    if (!sessionId) return;
+
+    if (confirm("Would you like to request your bill now?")) {
+        const btn = document.getElementById('request-bill-btn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> REQUESTING...';
+
+        db.ref('sessions/' + sessionId).update({
+            status: 'bill_requested',
+            billRequestedAt: Date.now()
+        }).then(() => {
+            btn.innerText = 'BILL REQUESTED';
+            btn.style.opacity = '0.7';
+            alert("Your bill request has been sent to the counter. Please wait while we process it.");
+        }).catch(err => {
+            console.error("Error requesting bill:", err);
+            btn.disabled = false;
+            btn.innerText = 'REQUEST BILL';
+            alert("Failed to request bill. Please try again.");
+        });
+    }
 }
 
 // Initial Call

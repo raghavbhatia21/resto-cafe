@@ -128,7 +128,8 @@ window.sendWhatsAppUpdate = (phone, status, tableNo) => {
     }
 
     if (message) {
-        window.sendWhatsAppAutomation(phone, message);
-        alert(`Notification sent: ${status.toUpperCase()}`);
+        const waUrl = `https://wa.me/91${phone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
+        window.open(waUrl, '_blank');
+        alert(`WhatsApp link opened for: ${status.toUpperCase()}`);
     }
 };

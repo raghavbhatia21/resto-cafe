@@ -130,6 +130,41 @@
             padding: 5rem;
             color: var(--text-muted);
         }
+
+        .status-badge {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 1rem;
+            font-weight: 700;
+            margin-left: 0.5rem;
+            vertical-align: middle;
+            text-transform: uppercase;
+        }
+
+        .status-badge.requested {
+            background: var(--accent-main);
+            color: white;
+            box-shadow: 0 0 10px rgba(255, 68, 68, 0.3);
+        }
+
+        @keyframes pulse-border {
+            0% {
+                border-left-color: var(--accent-drinks);
+            }
+
+            50% {
+                border-left-color: var(--accent-main);
+            }
+
+            100% {
+                border-left-color: var(--accent-drinks);
+            }
+        }
+
+        .bill-card.pulse-border {
+            animation: pulse-border 2s infinite;
+            border-left-width: 8px;
+        }
     </style>
 </head>
 
