@@ -13,7 +13,7 @@ function renderBills(sessions) {
     }
 
     const activeSessions = Object.entries(sessions)
-        .filter(([id, data]) => data.status === 'active')
+        .filter(([id, data]) => data.status === 'active' || data.status === 'bill_requested')
         .sort((a, b) => (b[1].lastOrderTime || 0) - (a[1].lastOrderTime || 0));
 
     if (activeSessions.length === 0) {
@@ -41,6 +41,7 @@ function renderBills(sessions) {
             <div class="bill-header">
                 <div>
                     <span class="table-no">Table ${session.tableNo}</span>
+                    <div style="font-size: 0.9rem; color: var(--primary); font-weight: 600;">${session.customerName || 'Guest'}</div>
                     ${isRequested ? '<span class="status-badge requested">BILL REQUESTED</span>' : ''}
                 </div>
                 <span style="font-size: 0.8rem; color: var(--text-muted)">ID: ${id.substr(-6).toUpperCase()}</span>
@@ -56,7 +57,7 @@ function renderBills(sessions) {
                 <button class="paid-btn" onclick="markAsPaid('${id}', '${session.tableNo}')">SETTLE & RELEASE</button>
                 <div class="cashier-actions" style="margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
                     <button class="wa-btn" style="background: #25D366; color: white; border: none; padding: 0.6rem; border-radius: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem;" 
-                        onclick="sendBillWhatsApp('${itemsString.replace(/'/g, "\\'")}', '${session.total}', '${session.tableNo}', '${session.customerPhone || ''}', '${id.substr(-6).toUpperCase()}')">
+                        onclick="sendBillWhatsApp('${itemsString.replace(/'/g, "\\'")}', '${session.total}', '${session.tableNo}', '${session.customerPhone || ''}', '${id.substr(-6).toUpperCase()}', '${(session.customerName || 'Guest').replace(/'/g, "\\'")}')">
                         <i class="fab fa-whatsapp"></i> SEND BILL
                     </button>
                     <button class="qr-btn" style="background: var(--primary); color: white; border: none; padding: 0.6rem; border-radius: 5px; cursor: pointer;" 
@@ -98,13 +99,13 @@ window.markAsPaid = (sessionId, tableNo) => {
     }
 };
 
-window.sendBillWhatsApp = (items, total, tableNo, phone, orderId) => {
+window.sendBillWhatsApp = (items, total, tableNo, phone, orderId, customerName) => {
     if (!phone) {
         alert("Phone number not found for this session.");
         return;
     }
 
-    const message = `🧾 *Bill from Caferesto*\n\nOrder ID: #${orderId}\nTable: ${tableNo}\nItems: ${items}\n-------------------\nTotal: *₹${total}*\n-------------------\n\nThank you for visiting! Please let us know if you need anything else. ✨`;
+    const message = `🧾 *Bill from Caferesto*\n\nCustomer: ${customerName}\nOrder ID: #${orderId}\nTable: ${tableNo}\nItems: ${items}\n-------------------\nTotal: *₹${total}*\n-------------------\n\nThank you for visiting, ${customerName}! Please let us know if you need anything else. ✨`;
 
     const waUrl = `https://wa.me/91${phone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
     window.open(waUrl, '_blank');

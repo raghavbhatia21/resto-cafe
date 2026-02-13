@@ -143,6 +143,7 @@ function checkSession() {
     const storedTable = localStorage.getItem('caferesto_table');
     const storedSession = localStorage.getItem('caferesto_session');
     const storedPhone = localStorage.getItem('caferesto_phone');
+    const storedName = localStorage.getItem('caferesto_name');
 
     if (storedTable && storedSession) {
         // Verify with Firebase if this session is still valid
@@ -153,14 +154,16 @@ function checkSession() {
                 currentTable = storedTable;
                 sessionId = storedSession;
                 window.customerPhone = storedPhone;
+                window.customerName = storedName;
                 document.getElementById('welcome-modal').classList.remove('active');
-                console.log(`Resumed session for Table ${currentTable}`);
+                console.log(`Resumed session for ${window.customerName} at Table ${currentTable}`);
                 watchSessionStatus();
             } else {
                 // Session invalid/expired
                 localStorage.removeItem('caferesto_table');
                 localStorage.removeItem('caferesto_session');
                 localStorage.removeItem('caferesto_phone');
+                localStorage.removeItem('caferesto_name');
                 document.getElementById('welcome-modal').classList.add('active');
             }
         });
@@ -191,10 +194,18 @@ function updateRequestBillVisibility() {
 function handleTableSelection() {
     const input = document.getElementById('welcome-table-no');
     const phoneInput = document.getElementById('welcome-phone');
+    const nameInput = document.getElementById('welcome-name');
     const errorMsg = document.getElementById('table-error');
     const startBtn = document.getElementById('start-order-btn');
     const tableNo = input.value;
     const phone = phoneInput.value;
+    const name = nameInput.value;
+
+    if (!name || name.trim().length < 2) {
+        errorMsg.innerText = "Please enter your name";
+        errorMsg.style.display = 'block';
+        return;
+    }
 
     if (!tableNo || tableNo < 1) {
         errorMsg.innerText = "Please enter a valid table number";
@@ -232,6 +243,8 @@ function handleTableSelection() {
                 // Re-attach
                 currentTable = tableNo;
                 sessionId = data.sessionId;
+                window.customerPhone = data.customerPhone || phone;
+                window.customerName = data.customerName || name;
                 document.getElementById('welcome-modal').classList.remove('active');
                 watchSessionStatus();
                 resetBtn();
@@ -244,6 +257,8 @@ function handleTableSelection() {
             // Table is free - Lock it!
             const sessionInit = {
                 tableNo: tableNo,
+                customerName: name,
+                customerPhone: phone,
                 status: 'active',
                 startTime: Date.now(),
                 total: 0,
@@ -259,9 +274,11 @@ function handleTableSelection() {
                     currentTable = tableNo;
                     sessionId = newSessionId;
                     window.customerPhone = phone;
+                    window.customerName = name;
                     localStorage.setItem('caferesto_table', currentTable);
                     localStorage.setItem('caferesto_session', sessionId);
                     localStorage.setItem('caferesto_phone', phone);
+                    localStorage.setItem('caferesto_name', name);
                     document.getElementById('welcome-modal').classList.remove('active');
                     watchSessionStatus();
                     resetBtn();
@@ -293,6 +310,8 @@ function watchSessionStatus() {
             alert("Your session has ended or the table has been released. Redirecting...");
             localStorage.removeItem('caferesto_table');
             localStorage.removeItem('caferesto_session');
+            localStorage.removeItem('caferesto_phone');
+            localStorage.removeItem('caferesto_name');
             window.location.reload();
         }
     });
@@ -444,6 +463,7 @@ function placeOrder() {
                 sessionData.items = [...(sessionData.items || []), ...cart];
                 sessionData.total = (sessionData.total || 0) + orderTotal;
                 sessionData.customerPhone = order.customerPhone; // Ensure phone is in session
+                sessionData.customerName = window.customerName || localStorage.getItem('caferesto_name'); // Ensure name is in session
                 sessionData.lastOrderTime = Date.now();
 
                 sessionRef.set(sessionData).then(() => {
