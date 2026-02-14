@@ -8,8 +8,9 @@ let isProcessingOrder = false;
 // DOM Elements
 const menuContainer = document.getElementById('menu-container');
 const tabBtns = document.querySelectorAll('.tab-btn');
-const cartCount = document.querySelector('.cart-count');
-const cartTrigger = document.getElementById('cart-trigger');
+const cartCount = document.getElementById('bar-cart-count');
+const cartTotalBar = document.getElementById('bar-cart-total');
+const bottomBar = document.getElementById('bottom-bar');
 const cartModal = document.getElementById('cart-modal');
 const closeCart = document.getElementById('close-cart');
 const cartItemsList = document.getElementById('cart-items-list');
@@ -123,7 +124,16 @@ function setupListeners() {
         });
     });
 
-    cartTrigger.addEventListener('click', () => {
+    const barCartTrigger = document.getElementById('bar-cart-trigger');
+    const barOpenCartBtn = document.getElementById('bar-open-cart-btn');
+
+    barCartTrigger.addEventListener('click', () => {
+        renderCart();
+        updateRequestBillVisibility();
+        cartModal.classList.add('active');
+    });
+
+    barOpenCartBtn.addEventListener('click', () => {
         renderCart();
         updateRequestBillVisibility();
         cartModal.classList.add('active');
@@ -135,6 +145,7 @@ function setupListeners() {
 
     placeOrderBtn.addEventListener('click', placeOrder);
     document.getElementById('request-bill-btn').addEventListener('click', requestBill);
+    document.getElementById('bar-request-bill-btn').addEventListener('click', requestBill);
     document.getElementById('start-order-btn').addEventListener('click', handleTableSelection);
 }
 
@@ -156,6 +167,7 @@ function checkSession() {
                 window.customerPhone = storedPhone;
                 window.customerName = storedName;
                 document.getElementById('welcome-modal').classList.remove('active');
+                if (bottomBar) bottomBar.classList.add('active');
                 console.log(`Resumed session for ${window.customerName} at Table ${currentTable}`);
                 watchSessionStatus();
             } else {
@@ -169,24 +181,33 @@ function checkSession() {
         });
     } else {
         document.getElementById('welcome-modal').classList.add('active');
+        if (bottomBar) bottomBar.classList.remove('active');
     }
 }
 
 function updateRequestBillVisibility() {
-    const btn = document.getElementById('request-bill-btn');
-    if (btn && sessionId) {
-        db.ref('sessions/' + sessionId).once('value').then(snapshot => {
+    const btnModal = document.getElementById('request-bill-btn');
+    const btnBar = document.getElementById('bar-request-bill-btn');
+
+    if (sessionId) {
+        db.ref('sessions/' + sessionId).on('value', snapshot => {
             const data = snapshot.val();
-            if (data && data.items && data.items.length > 0) {
-                btn.style.display = 'block';
-                if (data.status === 'bill_requested') {
+            const showBtn = data && data.items && data.items.length > 0;
+
+            [btnModal, btnBar].forEach(btn => {
+                if (!btn) return;
+                btn.style.display = showBtn ? 'block' : 'none';
+
+                if (data && data.status === 'bill_requested') {
                     btn.disabled = true;
-                    btn.innerText = 'BILL REQUESTED';
+                    btn.innerHTML = '<i class="fas fa-check"></i> BILL REQUESTED';
                     btn.style.opacity = '0.7';
+                } else {
+                    btn.disabled = false;
+                    btn.innerHTML = btn === btnBar ? '<i class="fas fa-file-invoice-dollar"></i> BILL' : 'REQUEST BILL';
+                    btn.style.opacity = '1';
                 }
-            } else {
-                btn.style.display = 'none';
-            }
+            });
         });
     }
 }
@@ -279,7 +300,9 @@ function handleTableSelection() {
                     localStorage.setItem('caferesto_session', sessionId);
                     localStorage.setItem('caferesto_phone', phone);
                     localStorage.setItem('caferesto_name', name);
+                    localStorage.setItem('caferesto_name', name);
                     document.getElementById('welcome-modal').classList.remove('active');
+                    if (bottomBar) bottomBar.classList.add('active');
                     watchSessionStatus();
                     resetBtn();
                 });
@@ -312,6 +335,7 @@ function watchSessionStatus() {
             localStorage.removeItem('caferesto_session');
             localStorage.removeItem('caferesto_phone');
             localStorage.removeItem('caferesto_name');
+            if (bottomBar) bottomBar.classList.remove('active');
             window.location.reload();
         }
     });
@@ -393,8 +417,18 @@ window.updateQty = (index, delta) => {
 
 function updateCartUI() {
     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-    cartCount.innerText = totalItems;
-    cartCount.style.display = totalItems > 0 ? 'flex' : 'none';
+    const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+    if (cartCount) cartCount.innerText = totalItems;
+    if (cartTotalBar) cartTotalBar.innerText = `₹${totalPrice}`;
+
+    // Animate count if it changes
+    if (totalItems > 0) {
+        cartCount.parentElement.style.transform = 'scale(1.2)';
+        setTimeout(() => {
+            cartCount.parentElement.style.transform = 'scale(1)';
+        }, 200);
+    }
 }
 
 // Place Order
@@ -493,21 +527,25 @@ function requestBill() {
     if (!sessionId) return;
 
     if (confirm("Would you like to request your bill now?")) {
-        const btn = document.getElementById('request-bill-btn');
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> REQUESTING...';
+        const btnModal = document.getElementById('request-bill-btn');
+        const btnBar = document.getElementById('bar-request-bill-btn');
+
+        [btnModal, btnBar].forEach(btn => {
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> REQUESTING...';
+            }
+        });
 
         db.ref('sessions/' + sessionId).update({
             status: 'bill_requested',
             billRequestedAt: Date.now()
         }).then(() => {
-            btn.innerText = 'BILL REQUESTED';
-            btn.style.opacity = '0.7';
+            // updateRequestBillVisibility listener will handle the UI update
             alert("Your bill request has been sent to the counter. Please wait while we process it.");
         }).catch(err => {
             console.error("Error requesting bill:", err);
-            btn.disabled = false;
-            btn.innerText = 'REQUEST BILL';
+            updateRequestBillVisibility(); // Reset button states
             alert("Failed to request bill. Please try again.");
         });
     }

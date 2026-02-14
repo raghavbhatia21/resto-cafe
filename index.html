@@ -52,10 +52,26 @@
         </main>
     </div>
 
-    <!-- Floating Cart Trigger -->
-    <div id="cart-trigger">
-        <i class="fas fa-shopping-basket"></i>
-        <div class="cart-count">0</div>
+    <!-- Bottom Bar Navigation (Cart & Bill) -->
+    <div id="bottom-bar" class="bottom-bar glass">
+        <div class="cart-info" id="bar-cart-trigger">
+            <div class="cart-icon-wrapper">
+                <i class="fas fa-shopping-basket"></i>
+                <div id="bar-cart-count" class="bar-cart-count">0</div>
+            </div>
+            <div class="cart-text">
+                <span class="total-label">Your Order</span>
+                <span id="bar-cart-total" class="total-value">₹0</span>
+            </div>
+        </div>
+        <div class="bar-actions">
+            <button id="bar-request-bill-btn" class="bar-btn outline" style="display: none;">
+                <i class="fas fa-file-invoice-dollar"></i> BILL
+            </button>
+            <button id="bar-open-cart-btn" class="bar-btn primary">
+                VIEW CART
+            </button>
+        </div>
     </div>
 
     <!-- Cart Modal -->
