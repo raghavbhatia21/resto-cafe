@@ -46,8 +46,8 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     padding: 1.5rem;
-    padding-bottom: 7rem;
-    /* Space for the bottom bar */
+    padding-bottom: 12rem;
+    /* Increased space to ensure last items are fully visible above the bottom bar */
 }
 
 header {
