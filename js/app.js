@@ -494,7 +494,18 @@ function placeOrder() {
                     startTime: Date.now()
                 };
 
-                sessionData.items = [...(sessionData.items || []), ...cart];
+                const existingItems = sessionData.items || [];
+
+                cart.forEach(cartItem => {
+                    const existingItem = existingItems.find(i => i.cartId === cartItem.cartId);
+                    if (existingItem) {
+                        existingItem.quantity += cartItem.quantity;
+                    } else {
+                        existingItems.push(cartItem);
+                    }
+                });
+
+                sessionData.items = existingItems;
                 sessionData.total = (sessionData.total || 0) + orderTotal;
                 sessionData.customerPhone = order.customerPhone; // Ensure phone is in session
                 sessionData.customerName = window.customerName || localStorage.getItem('caferesto_name'); // Ensure name is in session
