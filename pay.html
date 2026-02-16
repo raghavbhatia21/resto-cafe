@@ -177,12 +177,11 @@
         const upiLink = `upi://pay?${upiBase}`;
 
         // App specific links for better redirection
-        // GPay: googlepay://pay
-        // PhonePe: phonepe://pay
-        // Paytm: paytmmp://pay
+        const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+        const gpayScheme = isIOS ? 'gpay://upi/pay' : 'tez://upi/pay';
 
         document.getElementById('pay-link').href = upiLink;
-        document.getElementById('gpay-link').href = `googlepay://pay?${upiBase}`;
+        document.getElementById('gpay-link').href = `${gpayScheme}?${upiBase}`;
         document.getElementById('phonepe-link').href = `phonepe://pay?${upiBase}`;
         document.getElementById('paytm-link').href = `paytmmp://pay?${upiBase}`;
 
