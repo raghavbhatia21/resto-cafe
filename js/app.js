@@ -21,10 +21,48 @@ const tableNoInput = document.getElementById('welcome-table-no');
 // Initialize App
 // Initialize App
 function init() {
+    checkLicense();
     loadMenu();
     setupListeners();
     checkSession();
     updateRequestBillVisibility();
+}
+
+const LICENSE_ID = 'caferesto-demo';
+
+function checkLicense() {
+    const overlay = document.getElementById('license-overlay');
+    const msg = document.getElementById('license-msg');
+
+    db.ref('licenses/' + LICENSE_ID).on('value', snapshot => {
+        const data = snapshot.val();
+
+        if (!data) {
+            // If No license exists yet, create a trial one for the demo
+            const trialExpiry = new Date();
+            trialExpiry.setDate(trialExpiry.getDate() + 30); // 30 days trial
+            db.ref('licenses/' + LICENSE_ID).set({
+                clientName: "Demo Cafe & Resto",
+                expiryDate: trialExpiry.toISOString().split('T')[0],
+                isActive: true
+            });
+            return;
+        }
+
+        const expiryDate = new Date(data.expiryDate);
+        const isExpired = expiryDate < new Date() && data.expiryDate !== '';
+        const isSuspended = data.isActive === false;
+
+        if (isSuspended) {
+            overlay.style.display = 'flex';
+            msg.innerText = "Your service has been temporarily suspended by the administrator.";
+        } else if (isExpired) {
+            overlay.style.display = 'flex';
+            msg.innerText = `Your subscription expired on ${expiryDate.toLocaleDateString()}. Please renew to continue.`;
+        } else {
+            overlay.style.display = 'none';
+        }
+    });
 }
 
 // Load Menu from Firebase
