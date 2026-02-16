@@ -67,15 +67,21 @@ function renderMenu(items) {
 
         let actionsHtml = '';
         if (item.variants && item.variants.length > 0) {
-            // Variant selection
-            const options = item.variants.map(v => `<option value="${v.name}" data-price="${v.price}">${v.name} - ₹${v.price}</option>`).join('');
+            // Variant selection as Chips
+            const chipsHtml = item.variants.map((v, idx) => `
+                <button class="variant-chip ${idx === 0 ? 'active' : ''}" 
+                    data-price="${v.price}" 
+                    data-variant="${v.name}"
+                    onclick="selectVariant(this, '${id}')">
+                    ${v.name}
+                </button>
+            `).join('');
+
             actionsHtml = `
-                <div class="variant-selector">
-                    <select id="variant-${id}" class="glass-select">
-                        ${options}
-                    </select>
+                <div class="variant-chips" id="chips-${id}">
+                    ${chipsHtml}
                 </div>
-                <button class="add-btn" onclick="addVariantToCart('${id}', '${item.name}')">Add to Order</button>
+                <button class="add-btn" onclick="addSelectedVariantToCart('${id}', '${item.name}')">Add to Order</button>
             `;
         } else {
             // Direct add
@@ -86,7 +92,7 @@ function renderMenu(items) {
             <img src="${item.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400'}" alt="${item.name}" class="item-img">
             <div class="item-info">
                 <span class="item-name">${item.name}</span>
-                <span class="item-price">${item.variants && item.variants.length > 0 ? 'From ₹' + Math.min(...item.variants.map(v => v.price)) : '₹' + item.price}</span>
+                <span class="item-price" id="price-${id}">${item.variants && item.variants.length > 0 ? '₹' + item.variants[0].price : '₹' + item.price}</span>
             </div>
             <p class="item-desc">${item.description}</p>
             <div class="item-actions">
@@ -97,12 +103,26 @@ function renderMenu(items) {
     });
 }
 
-// Helper for variants
-window.addVariantToCart = (id, baseName) => {
-    const selector = document.getElementById(`variant-${id}`);
-    const selectedOption = selector.options[selector.selectedIndex];
-    const variantName = selectedOption.value;
-    const variantPrice = parseFloat(selectedOption.dataset.price);
+// Variant Selection Logic
+window.selectVariant = (chip, id) => {
+    // Remove active class from all chips in this container
+    const container = document.getElementById(`chips-${id}`);
+    container.querySelectorAll('.variant-chip').forEach(c => c.classList.remove('active'));
+
+    // Add active class to clicked chip
+    chip.classList.add('active');
+
+    // Update price display
+    const priceDisplay = document.getElementById(`price-${id}`);
+    priceDisplay.innerText = `₹${chip.dataset.price}`;
+};
+
+window.addSelectedVariantToCart = (id, baseName) => {
+    const activeChip = document.querySelector(`#chips-${id} .variant-chip.active`);
+    if (!activeChip) return;
+
+    const variantName = activeChip.dataset.variant;
+    const variantPrice = parseFloat(activeChip.dataset.price);
 
     addToCart(id, `${baseName} (${variantName})`, variantPrice, variantName);
 };

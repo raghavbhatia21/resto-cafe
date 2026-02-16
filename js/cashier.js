@@ -105,11 +105,10 @@ window.sendBillWhatsApp = (items, total, tableNo, phone, orderId, customerName) 
         return;
     }
 
-    const upiId = "raghavbhatia332@okhdfcbank";
-    const upiLink = `upi://pay?pa=${upiId}&pn=Caferesto&am=${total}&cu=INR&tn=Table${tableNo}`;
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiLink)}`;
+    const baseUrl = window.location.origin + window.location.pathname.split('/').slice(0, -1).join('/');
+    const paymentUrl = `${baseUrl}/pay.html?am=${total}&tn=${tableNo}&id=${orderId}`;
 
-    const message = `🧾 *Bill from Caferesto*\n\nCustomer: ${customerName}\nOrder ID: #${orderId}\nTable: ${tableNo}\nItems: ${items}\n-------------------\nTotal: *₹${total}*\n-------------------\n\n💳 *Payment Link (UPI):*\n${upiLink}\n\n🖼️ *Payment QR Code:* ${qrUrl}\n\nThank you for visiting, ${customerName}! Please let us know if you need anything else. ✨`;
+    const message = `🧾 *Bill from Caferesto*\n\nCustomer: ${customerName}\nOrder ID: #${orderId}\nTable: ${tableNo}\nItems: ${items}\n-------------------\nTotal: *₹${total}*\n-------------------\n\n🔗 *Pay Online:* ${paymentUrl}\n\nThank you for visiting, ${customerName}! ✨`;
 
     const waUrl = `https://wa.me/91${phone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
     window.open(waUrl, '_blank');

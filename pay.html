@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pay at Caferesto</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #FF4B2B;
+            --secondary: #FF416C;
+            --glass: rgba(255, 255, 255, 0.95);
+            --text: #2d3436;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #FF416C 0%, #FF4B2B 100%);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            color: var(--text);
+        }
+
+        .payment-card {
+            background: var(--glass);
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 100%;
+            max-width: 350px;
+            margin: 1rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            letter-spacing: -1px;
+        }
+
+        .amount-display {
+            font-size: 3rem;
+            font-weight: 800;
+            margin: 1rem 0;
+            color: #000;
+        }
+
+        .details {
+            color: #636e72;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .qr-container {
+            background: white;
+            padding: 1rem;
+            border-radius: 12px;
+            display: inline-block;
+            margin-bottom: 2rem;
+            border: 1px solid #eee;
+        }
+
+        .qr-img {
+            width: 180px;
+            height: 180px;
+            display: block;
+        }
+
+        .pay-button {
+            background: linear-gradient(to right, #FF416C, #FF4B2B);
+            color: white;
+            text-decoration: none;
+            padding: 1.2rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            display: block;
+            font-size: 1.1rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 5px 15px rgba(255, 75, 43, 0.3);
+        }
+
+        .pay-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 75, 43, 0.4);
+        }
+
+        .footer-note {
+            margin-top: 1.5rem;
+            font-size: 0.8rem;
+            color: #b2bec3;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="payment-card">
+        <div class="logo">Caferesto</div>
+        <p style="margin: 0; color: #636e72;">Total to Pay</p>
+        <div class="amount-display" id="display-amount">₹0</div>
+
+        <div class="details" id="display-details">
+            Table # -- | Order # --
+        </div>
+
+        <div class="qr-container">
+            <img id="qr-image" src="" alt="Payment QR" class="qr-img">
+        </div>
+
+        <a id="pay-link" href="#" class="pay-button">
+            <i class="fas fa-mobile-alt"></i> PAY WITH UPI
+        </a>
+
+        <p class="footer-note">Scanning with PhonePe, GPay, or Paytm? The QR works too!</p>
+    </div>
+
+    <script>
+        // Extract parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const amount = urlParams.get('am') || '0';
+        const table = urlParams.get('tn') || '--';
+        const orderId = urlParams.get('id') || '--';
+
+        // Update UI
+        document.getElementById('display-amount').innerText = `₹${amount}`;
+        document.getElementById('display-details').innerText = `Table ${table} | Order #${orderId}`;
+
+        // UPI Logic
+        const upiId = "raghavbhatia332@okhdfcbank";
+        const name = "Caferesto";
+        const upiLink = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR&tn=${encodeURIComponent('Table ' + table + ' - ' + orderId)}`;
+
+        // Generate QR
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiLink)}`;
+        document.getElementById('qr-image').src = qrUrl;
+        document.getElementById('pay-link').href = upiLink;
+
+        // Auto-redirect for mobile
+        window.onload = () => {
+            if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                // Small delay to allow page load
+                setTimeout(() => {
+                    window.location.href = upiLink;
+                }, 1000);
+            }
+        };
+    </script>
+</body>
+
+</html>
