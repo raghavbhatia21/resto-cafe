@@ -73,22 +73,46 @@
             display: block;
         }
 
-        .pay-button {
-            background: linear-gradient(to right, #FF416C, #FF4B2B);
-            color: white;
-            text-decoration: none;
-            padding: 1.2rem 2rem;
-            border-radius: 12px;
-            font-weight: 600;
-            display: block;
-            font-size: 1.1rem;
-            transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 0 5px 15px rgba(255, 75, 43, 0.3);
+        .pay-options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-top: 1.5rem;
         }
 
-        .pay-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(255, 75, 43, 0.4);
+        .pay-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            padding: 1rem;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            color: white;
+            transition: transform 0.2s;
+            font-size: 1rem;
+        }
+
+        .pay-btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-gpay {
+            background: #000;
+        }
+
+        .btn-phonepe {
+            background: #5f259f;
+        }
+
+        .btn-paytm {
+            background: #00baf2;
+        }
+
+        .btn-generic {
+            background: linear-gradient(to right, #FF416C, #FF4B2B);
+            margin-top: 0.5rem;
         }
 
         .footer-note {
@@ -113,11 +137,24 @@
             <img id="qr-image" src="" alt="Payment QR" class="qr-img">
         </div>
 
-        <a id="pay-link" href="#" class="pay-button">
-            <i class="fas fa-mobile-alt"></i> PAY WITH UPI
-        </a>
+        <p style="font-size: 0.9rem; font-weight: 600; color: #636e72; margin-bottom: 1rem;">Choose your App</p>
 
-        <p class="footer-note">Scanning with PhonePe, GPay, or Paytm? The QR works too!</p>
+        <div class="pay-options">
+            <a id="gpay-link" href="#" class="pay-btn btn-gpay">
+                <i class="fab fa-google-pay fa-lg"></i> Google Pay
+            </a>
+            <a id="phonepe-link" href="#" class="pay-btn btn-phonepe">
+                <i class="fas fa-mobile-alt"></i> PhonePe
+            </a>
+            <a id="paytm-link" href="#" class="pay-btn btn-paytm">
+                <i class="fas fa-wallet"></i> Paytm
+            </a>
+            <a id="pay-link" href="#" class="pay-btn btn-generic">
+                <i class="fas fa-university"></i> ANY UPI APP
+            </a>
+        </div>
+
+        <p class="footer-note">Scanning with any app? The QR works too!</p>
     </div>
 
     <script>
@@ -134,22 +171,25 @@
         // UPI Logic
         const upiId = "raghavbhatia332@okhdfcbank";
         const name = "Caferesto";
-        const upiLink = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR&tn=${encodeURIComponent('Table ' + table + ' - ' + orderId)}`;
+        const note = encodeURIComponent('Table ' + table + ' - ' + orderId);
+        const upiBase = `pa=${upiId}&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR&tn=${note}`;
+
+        const upiLink = `upi://pay?${upiBase}`;
+
+        // App specific links for better redirection
+        // GPay: googlepay://pay
+        // PhonePe: phonepe://pay
+        // Paytm: paytmmp://pay
+
+        document.getElementById('pay-link').href = upiLink;
+        document.getElementById('gpay-link').href = `googlepay://pay?${upiBase}`;
+        document.getElementById('phonepe-link').href = `phonepe://pay?${upiBase}`;
+        document.getElementById('paytm-link').href = `paytmmp://pay?${upiBase}`;
 
         // Generate QR
         const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiLink)}`;
         document.getElementById('qr-image').src = qrUrl;
-        document.getElementById('pay-link').href = upiLink;
 
-        // Auto-redirect for mobile
-        window.onload = () => {
-            if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-                // Small delay to allow page load
-                setTimeout(() => {
-                    window.location.href = upiLink;
-                }, 1000);
-            }
-        };
     </script>
 </body>
 
