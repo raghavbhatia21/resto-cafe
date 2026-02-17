@@ -193,12 +193,31 @@
         </div>
     </div>
 
+    <!-- License/Suspension Overlay -->
+    <div id="license-overlay"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 99999; flex-direction: column; align-items: center; justify-content: center; color: white; text-align: center; padding: 2rem; backdrop-filter: blur(10px);">
+        <div
+            style="background: rgba(255,255,255,0.05); padding: 3rem; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); max-width: 500px; width: 100%;">
+            <div style="font-size: 4rem; color: #FF4B2B; margin-bottom: 1.5rem;"><i
+                    class="fas fa-exclamation-triangle"></i></div>
+            <h2 style="font-size: 2rem; font-weight: 800; margin-bottom: 1rem; letter-spacing: -1px;">SERVICE SUSPENDED
+            </h2>
+            <p id="license-msg" style="color: #a0a0a0; margin-bottom: 2rem; line-height: 1.6;">Your subscription has
+                expired or the service has been temporarily disabled. Please contact the administrator to renew.</p>
+            <a href="https://wa.me/918949417812"
+                style="background: #25D366; color: white; text-decoration: none; padding: 1rem 2rem; border-radius: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.5rem;">
+                <i class="fab fa-whatsapp"></i> CONTACT ADMIN
+            </a>
+        </div>
+    </div>
+
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
     <script src="js/firebase-config.js"></script>
+    <script src="js/license.js"></script>
     <script>
         firebase.auth().onAuthStateChanged((user) => {
             if (!user) window.location.href = 'admin/login.html';
