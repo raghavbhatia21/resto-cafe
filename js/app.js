@@ -34,14 +34,14 @@ function checkLicense() {
     const overlay = document.getElementById('license-overlay');
     const msg = document.getElementById('license-msg');
 
-    db.ref('licenses/' + LICENSE_ID).on('value', snapshot => {
+    saasDb.ref('licenses/' + LICENSE_ID).on('value', snapshot => {
         const data = snapshot.val();
 
         if (!data) {
             // If No license exists yet, create a trial one for the demo
             const trialExpiry = new Date();
             trialExpiry.setDate(trialExpiry.getDate() + 30); // 30 days trial
-            db.ref('licenses/' + LICENSE_ID).set({
+            saasDb.ref('licenses/' + LICENSE_ID).set({
                 clientName: "Demo Cafe & Resto",
                 expiryDate: trialExpiry.toISOString().split('T')[0],
                 isActive: true
