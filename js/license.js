@@ -35,10 +35,10 @@ function checkLicense() {
         if (expiryDisplay) {
             expiryDisplay.innerHTML = `<i class="fas fa-key"></i> License Expiry: <b>${expiryDate.toLocaleDateString()}</b>`;
             if (isExpired) {
-                expiryDisplay.style.color = 'var(--accent-main)';
+                expiryDisplay.style.color = '#ef4444'; // Use a fixed red for clarity on expired
                 expiryDisplay.innerHTML += ' (EXPIRED)';
             } else {
-                expiryDisplay.style.color = 'var(--primary)';
+                expiryDisplay.style.color = ''; // Let CSS handle the color (var(--primary))
             }
         }
 

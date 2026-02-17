@@ -584,3 +584,24 @@ header {
     border: 2px solid var(--primary);
     box-shadow: 0 0 30px rgba(245, 158, 11, 0.2);
 }
+
+/* License Badge */
+.license-badge {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    font-size: 0.8rem;
+    color: var(--primary);
+    white-space: nowrap;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+}
+
+@media (max-width: 640px) {
+    .license-badge {
+        display: block;
+        margin: 0.5rem auto 0 !important;
+        width: fit-content;
+    }
+}
