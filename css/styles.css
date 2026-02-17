@@ -719,3 +719,89 @@ header {
         width: fit-content;
     }
 }
+
+/* Call Waiter Button */
+.call-waiter-btn {
+    position: fixed;
+    right: 2rem;
+    bottom: 7rem;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    transition: var(--transition);
+    border: 1px solid var(--primary);
+    box-shadow: 0 10px 25px rgba(245, 158, 11, 0.3);
+}
+
+.call-waiter-btn i {
+    font-size: 1.5rem;
+    margin-bottom: 0.2rem;
+    color: var(--primary);
+}
+
+.call-waiter-btn span {
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.call-waiter-btn:hover {
+    transform: scale(1.1);
+    background: var(--primary);
+}
+
+.call-waiter-btn:hover i {
+    color: white;
+}
+
+.call-waiter-btn.active {
+    background: var(--accent-main);
+    border-color: var(--accent-main);
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+    animation: pulse-red 2s infinite;
+}
+
+.call-waiter-btn.active i {
+    color: white;
+}
+
+@keyframes pulse-red {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+    }
+
+    70% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 15px rgba(239, 68, 68, 0);
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+    }
+}
+
+@media (max-width: 640px) {
+    .call-waiter-btn {
+        right: 1.5rem;
+        bottom: 6rem;
+        width: 60px;
+        height: 60px;
+    }
+
+    .call-waiter-btn i {
+        font-size: 1.2rem;
+    }
+
+    .call-waiter-btn span {
+        font-size: 0.5rem;
+    }
+}
