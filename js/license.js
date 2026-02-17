@@ -30,6 +30,18 @@ function checkLicense() {
         const isExpired = expiryDate < new Date() && data.expiryDate !== '';
         const isSuspended = data.isActive === false;
 
+        // Display expiry info if element exists (e.g., in Cashier dashboard)
+        const expiryDisplay = document.getElementById('license-expiry-display');
+        if (expiryDisplay) {
+            expiryDisplay.innerHTML = `<i class="fas fa-key"></i> License Expiry: <b>${expiryDate.toLocaleDateString()}</b>`;
+            if (isExpired) {
+                expiryDisplay.style.color = 'var(--accent-main)';
+                expiryDisplay.innerHTML += ' (EXPIRED)';
+            } else {
+                expiryDisplay.style.color = 'var(--primary)';
+            }
+        }
+
         if (isSuspended) {
             overlay.style.display = 'flex';
             msg.innerText = "Your service has been temporarily suspended by the administrator.";
