@@ -133,3 +133,36 @@ window.showPaymentQR = (total, tableNo) => {
     `;
     document.body.appendChild(modal);
 };
+
+// Waiter Call Logic
+const waiterCallsArea = document.getElementById('waiter-calls-area');
+if (waiterCallsArea) {
+    db.ref('waiter_calls').on('value', snapshot => {
+        const calls = snapshot.val();
+        if (!calls) {
+            waiterCallsArea.classList.remove('active');
+            waiterCallsArea.innerHTML = '';
+            return;
+        }
+
+        waiterCallsArea.classList.add('active');
+        waiterCallsArea.innerHTML = '';
+
+        Object.entries(calls).forEach(([id, call]) => {
+            const time = new Date(call.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const card = document.createElement('div');
+            card.className = 'waiter-card glass';
+            card.innerHTML = `
+                <h4>Table ${call.tableNo}</h4>
+                <p><i class="fas fa-user"></i> ${call.customerName}</p>
+                <p><i class="far fa-clock"></i> ${time}</p>
+                <button class="resolve-btn" onclick="resolveWaiterCall('${id}')">RESOLVED / CLEAR</button>
+            `;
+            waiterCallsArea.appendChild(card);
+        });
+    });
+}
+
+window.resolveWaiterCall = (id) => {
+    db.ref('waiter_calls/' + id).remove();
+};
