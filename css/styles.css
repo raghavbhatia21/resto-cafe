@@ -452,6 +452,120 @@ header {
     }
 }
 
+/* Welcome Modal Specifics */
+#welcome-modal .modal-content {
+    border: 2px solid var(--primary);
+    box-shadow: 0 0 30px rgba(245, 158, 11, 0.2);
+}
+
+/* License Badge */
+.license-badge {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    font-size: 0.8rem;
+    color: var(--primary);
+    white-space: nowrap;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+}
+
+@media (max-width: 640px) {
+    .license-badge {
+        display: block;
+        margin: 0.5rem auto 0 !important;
+        width: fit-content;
+    }
+}
+
+@keyframes pulse-red {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+    }
+
+    70% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 15px rgba(239, 68, 68, 0);
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+    }
+}
+
+/* Waiter Request Notifications (Dashboards) */
+.waiter-requests-container {
+    display: none;
+    grid-column: 1/-1;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px dashed var(--accent-main);
+    border-radius: 1rem;
+}
+
+.waiter-requests-container.active {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+.waiter-card {
+    padding: 1.2rem;
+    border-left: 4px solid var(--accent-main);
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    animation: pulse-border-red 2s infinite;
+}
+
+.waiter-card h4 {
+    margin: 0;
+    color: var(--accent-main);
+    font-size: 1.2rem;
+    font-weight: 800;
+}
+
+.waiter-card p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.resolve-btn {
+    background: var(--accent-main);
+    color: white;
+    border: none;
+    padding: 0.6rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.resolve-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+}
+
+@keyframes pulse-border-red {
+    0% {
+        border-left-color: var(--accent-main);
+    }
+
+    50% {
+        border-left-color: #ff8787;
+    }
+
+    100% {
+        border-left-color: var(--accent-main);
+    }
+}
+
 .modal-overlay {
     position: fixed;
     top: 0;

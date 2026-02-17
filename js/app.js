@@ -628,5 +628,46 @@ function requestBill() {
     }
 }
 
+// Call Waiter Logic
+window.callWaiter = () => {
+    if (!sessionId || !currentTable) {
+        alert("Please select a table first.");
+        return;
+    }
+
+    const btn = document.getElementById('call-waiter-btn');
+    if (btn.classList.contains('active')) {
+        alert("A waiter has already been called. They will be with you shortly!");
+        return;
+    }
+
+    if (confirm("Would you like to call a waiter to your table?")) {
+        const callId = `call_${currentTable}_${Date.now()}`;
+
+        db.ref('waiter_calls/' + callId).set({
+            tableNo: currentTable,
+            customerName: window.customerName || 'Guest',
+            timestamp: Date.now(),
+            status: 'pending',
+            sessionId: sessionId
+        }).then(() => {
+            btn.classList.add('active');
+            btn.innerHTML = '<i class="fas fa-hands-helping"></i><span>Called</span>';
+            showToast("Waiter notified. Someone will assist you shortly!");
+
+            // Listen for resolution
+            db.ref('waiter_calls/' + callId).on('value', snapshot => {
+                if (!snapshot.exists()) {
+                    btn.classList.remove('active');
+                    btn.innerHTML = '<i class="fas fa-bell"></i><span>Call Waiter</span>';
+                }
+            });
+        }).catch(err => {
+            console.error("Waiter call failed:", err);
+            alert("Connection error. Please try again.");
+        });
+    }
+};
+
 // Initial Call
 init();
