@@ -23,6 +23,7 @@ const tableNoInput = document.getElementById('welcome-table-no');
 function init() {
     checkLicense();
     loadMenu();
+    loadOffers();
     setupListeners();
     checkSession();
     updateRequestBillVisibility();
@@ -94,6 +95,86 @@ function loadMenu() {
             console.error("Failed to load menu:", err);
             menuContainer.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">Menu is currently unavailable. Please check back later.</p>';
         });
+}
+
+// Load Offers from Firebase
+function loadOffers() {
+    const offersSection = document.getElementById('offers-section');
+    const offersContainer = document.getElementById('offers-container');
+
+    db.ref('offers').on('value', snapshot => {
+        const offers = snapshot.val();
+
+        if (!offers) {
+            // Seed sample data for the demo if totally empty
+            const sampleOffers = {
+                "offer_1": {
+                    title: "Valentine's Special",
+                    description: "Combo for 2: Pasta + Pizza + 2 Drinks",
+                    tag: "SPECIAL DEAL",
+                    image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800",
+                    active: true
+                },
+                "offer_2": {
+                    title: "Super Combo Deal",
+                    description: "Burger + Fries + Coke at just ₹199",
+                    tag: "BEST SELLER",
+                    image: "https://images.unsplash.com/photo-1594212699903-ec8a3ecc50f1?w=800",
+                    active: true
+                }
+            };
+            db.ref('offers').set(sampleOffers);
+            return;
+        }
+
+        renderOffers(offers);
+    });
+}
+
+function renderOffers(offers) {
+    const offersSection = document.getElementById('offers-section');
+    const offersContainer = document.getElementById('offers-container');
+
+    const activeOffers = Object.entries(offers).filter(([id, o]) => o.active !== false);
+
+    if (activeOffers.length === 0) {
+        offersSection.style.display = 'none';
+        return;
+    }
+
+    offersSection.style.display = 'block';
+    offersContainer.innerHTML = '';
+
+    activeOffers.forEach(([id, offer]) => {
+        const offerCard = document.createElement('div');
+        offerCard.className = 'offer-card';
+        offerCard.style.backgroundImage = `url('${offer.image || 'https://images.unsplash.com/photo-1476224483470-4f981f360a1e?w=800'}')`;
+
+        offerCard.innerHTML = `
+            ${offer.tag ? `<div class="offer-tag">${offer.tag}</div>` : ''}
+            <div class="offer-content">
+                <h3 class="offer-title">${offer.title}</h3>
+                <p class="offer-desc">${offer.description}</p>
+            </div>
+        `;
+
+        offersContainer.appendChild(offerCard);
+    });
+
+    // Update Indicators
+    const indicators = document.querySelector('.scroll-indicators');
+    if (indicators) {
+        indicators.innerHTML = activeOffers.map((_, idx) =>
+            `<div class="dot ${idx === 0 ? 'active' : ''}"></div>`
+        ).join('');
+
+        // Simple scroll listener to update dots
+        offersContainer.addEventListener('scroll', () => {
+            const index = Math.round(offersContainer.scrollLeft / offersContainer.offsetWidth);
+            const dots = indicators.querySelectorAll('.dot');
+            dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
+        });
+    }
 }
 
 // Render Menu Items

@@ -43,6 +43,21 @@
             <button class="tab-btn" data-category="drinks">Drinks</button>
         </nav>
 
+        <!-- Offers Section -->
+        <section id="offers-section" style="margin-bottom: 2rem; display: none;">
+            <div class="section-header"
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h2 style="font-size: 1.2rem; font-weight: 800; color: var(--primary);">TODAY'S SPECIAL DEALS</h2>
+                <div class="scroll-indicators" style="display: flex; gap: 0.5rem;">
+                    <div class="dot active"></div>
+                    <div class="dot"></div>
+                </div>
+            </div>
+            <div id="offers-container" class="offers-carousel">
+                <!-- Offers injected by JS -->
+            </div>
+        </section>
+
         <main id="menu-container" class="menu-grid">
             <!-- Items injected by JS -->
             <div class="loading" style="grid-column: 1/-1; text-align: center; padding: 3rem;">
