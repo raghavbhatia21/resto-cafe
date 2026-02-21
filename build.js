@@ -2,43 +2,59 @@ const fs = require('fs');
 const path = require('path');
 const matter = require('gray-matter');
 
-const CONTENT_DIR = path.join(__dirname, 'content', 'menu');
-const OUTPUT_FILE = path.join(__dirname, 'menu.json');
+// 1. Build Menu
+const MENU_DIR = path.join(__dirname, 'content', 'menu');
+const MENU_OUTPUT = path.join(__dirname, 'menu.json');
 
-// Ensure content directory exists (for first run or if empty)
-if (!fs.existsSync(CONTENT_DIR)) {
-    console.log('Content directory not found, creating it...');
-    fs.mkdirSync(CONTENT_DIR, { recursive: true });
+function buildJson(sourceDir, outputFile, schemaMap) {
+    if (!fs.existsSync(sourceDir)) {
+        fs.mkdirSync(sourceDir, { recursive: true });
+        return {};
+    }
+
+    const items = {};
+    const files = fs.readdirSync(sourceDir);
+
+    files.forEach(file => {
+        if (!file.endsWith('.md')) return;
+
+        const filePath = path.join(sourceDir, file);
+        const fileContent = fs.readFileSync(filePath, 'utf8');
+        const { data } = matter(fileContent);
+        const id = file.replace('.md', '');
+
+        if (data.available !== false && data.active !== false) {
+            items[id] = schemaMap(id, data);
+        }
+    });
+
+    fs.writeFileSync(outputFile, JSON.stringify(items, null, 2));
+    console.log(`Generated ${path.basename(outputFile)} with ${Object.keys(items).length} items.`);
+    return items;
 }
 
-const menuItems = {};
+buildJson(MENU_DIR, MENU_OUTPUT, (id, data) => ({
+    id: id,
+    name: data.title,
+    price: data.price,
+    category: data.category,
+    description: data.description || '',
+    image: data.image || '',
+    available: data.available,
+    variants: data.variants || []
+}));
 
-console.log(`Starting build from: ${CONTENT_DIR}`);
-const files = fs.readdirSync(CONTENT_DIR);
+// 2. Build Offers
+const OFFERS_DIR = path.join(__dirname, 'content', 'offers');
+const OFFERS_OUTPUT = path.join(__dirname, 'offers.json');
 
-files.forEach(file => {
-    if (!file.endsWith('.md')) return;
+buildJson(OFFERS_DIR, OFFERS_OUTPUT, (id, data) => ({
+    id: id,
+    title: data.title,
+    description: data.description,
+    tag: data.tag,
+    image: data.image,
+    active: data.active
+}));
 
-    const filePath = path.join(CONTENT_DIR, file);
-    const fileContent = fs.readFileSync(filePath, 'utf8');
-    const { data } = matter(fileContent);
-
-    // Use filename as ID if not present
-    const id = file.replace('.md', '');
-
-    if (data.available !== false) {
-        menuItems[id] = {
-            id: id,
-            name: data.title,
-            price: data.price,
-            category: data.category,
-            description: data.description || '',
-            image: data.image || '',
-            available: data.available,
-            variants: data.variants || []
-        };
-    }
-});
-
-fs.writeFileSync(OUTPUT_FILE, JSON.stringify(menuItems, null, 2));
-console.log(`Build complete! Generated menu.json with ${Object.keys(menuItems).length} items.`);
+console.log(`Build complete!`);

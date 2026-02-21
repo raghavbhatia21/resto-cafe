@@ -84,20 +84,43 @@ function showEmptyState() {
 }
 
 window.markAsPaid = (sessionId, tableNo) => {
-    if (confirm(`Confirm payment for Table ${tableNo}? This will free the table for new customers.`)) {
-        db.ref('sessions/' + sessionId).update({
-            status: 'paid',
-            settledAt: Date.now()
+    if (confirm(`Confirm payment for Table ${tableNo}? This will free the table and clear all session data.`)) {
+        // 1. Free the Table
+        db.ref('tables/table_' + tableNo).update({
+            status: 'free',
+            sessionId: null
         }).then(() => {
-            db.ref('tables/table_' + tableNo).update({
-                status: 'free',
-                sessionId: null
-            }).then(() => {
-                alert(`Table ${tableNo} is now free.`);
+            // 2. Cleanup Orders associated with this session
+            db.ref('orders').once('value', snapshot => {
+                const orders = snapshot.val();
+                if (orders) {
+                    Object.entries(orders).forEach(([id, order]) => {
+                        if (order.sessionId === sessionId) {
+                            db.ref('orders/' + id).remove();
+                        }
+                    });
+                }
+            });
+
+            // 3. Cleanup Waiter Calls associated with this session
+            db.ref('waiter_calls').once('value', snapshot => {
+                const calls = snapshot.val();
+                if (calls) {
+                    Object.entries(calls).forEach(([id, call]) => {
+                        if (call.sessionId === sessionId) {
+                            db.ref('waiter_calls/' + id).remove();
+                        }
+                    });
+                }
+            });
+
+            // 4. Finally, Remove the Session itself
+            db.ref('sessions/' + sessionId).remove().then(() => {
+                alert(`Table ${tableNo} settled and data cleared.`);
             });
         }).catch(err => {
-            console.error("Error settling bill:", err);
-            alert("Failed to settle bill. Please check console.");
+            console.error("Error during cleanup:", err);
+            alert("Settlement failed. Please check connection.");
         });
     }
 };
