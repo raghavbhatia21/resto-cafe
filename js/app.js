@@ -523,13 +523,17 @@ function placeOrder() {
         placeOrderBtn.innerHTML = originalBtnContent;
     };
 
+    const commentInput = document.getElementById('order-comment');
+    const orderComment = commentInput ? commentInput.value.trim() : "";
+
     const order = {
         tableNo: currentTable,
         items: cart,
         timestamp: Date.now(),
         status: 'pending',
         sessionId: sessionId,
-        customerPhone: window.customerPhone || localStorage.getItem('caferesto_phone')
+        customerPhone: window.customerPhone || localStorage.getItem('caferesto_phone'),
+        comment: orderComment
     };
 
     // Verify table is still active
@@ -576,6 +580,7 @@ function placeOrder() {
                 sessionData.customerPhone = order.customerPhone; // Ensure phone is in session
                 sessionData.customerName = window.customerName || localStorage.getItem('caferesto_name'); // Ensure name is in session
                 sessionData.lastOrderTime = Date.now();
+                if (orderComment) sessionData.comment = orderComment; // Save latest instruction to session
 
                 sessionRef.set(sessionData).then(() => {
                     alert('Order placed successfully! The kitchen is onto it.');
@@ -585,6 +590,7 @@ function placeOrder() {
                     updateRequestBillVisibility();
                     cartModal.classList.remove('active');
                     if (tableNoInput) tableNoInput.value = '';
+                    if (commentInput) commentInput.value = '';
                     resetBtn();
                 });
             });

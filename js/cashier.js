@@ -49,6 +49,9 @@ function renderBills(sessions) {
             <ul class="bill-items">
                 ${itemsHtml || '<li class="bill-item">No items yet</li>'}
             </ul>
+            ${session.comment ? `<div style="margin-bottom: 1rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 5px; font-size: 0.85rem; border-left: 3px solid var(--primary);">
+                <i class="fas fa-comment-alt" style="margin-right: 0.5rem; color: var(--primary);"></i>${session.comment}
+            </div>` : ''}
             <div class="bill-footer">
                 <div class="total-row">
                     <span>Grand Total:</span>

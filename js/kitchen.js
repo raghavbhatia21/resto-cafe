@@ -48,6 +48,9 @@ function renderOrders(orders) {
             <ul class="order-items">
                 ${itemsHtml}
             </ul>
+            ${order.comment ? `<div class="order-comment" style="background: rgba(255,107,107,0.1); border: 1px dashed var(--accent-main); padding: 0.6rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.9rem; color: #ffeb3b;">
+                <strong>Note:</strong> ${order.comment}
+            </div>` : ''}
             <div class="order-actions">
                 <button class="complete-btn" onclick="completeOrder('${id}')">MARK AS READY</button>
                 <div class="wa-actions" style="margin-top: 0.5rem; display: flex; gap: 0.5rem;">
