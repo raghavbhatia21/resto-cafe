@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0a0a0f">
+    <title>Cash Counter | DesignE</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        :root {
+            --bg-dark: #020205;
+            --primary-glow: #ff9d00;
+            --secondary-glow: #00d2ff;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-dim: #888899;
+            --success-neon: #22c55e;
+        }
+
+        body {
+            background: var(--bg-dark);
+            color: white;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 100% 0%, rgba(255, 157, 0, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 0% 100%, rgba(0, 210, 255, 0.05) 0%, transparent 50%);
+            min-height: 100vh;
+        }
+
+        /* Minimalist Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--glass-border);
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+            line-height: 1;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .nav-btn {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-dim);
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255,255,255,0.08);
+            color: white;
+            border-color: rgba(255,255,255,0.2);
+        }
+
+        .nav-btn.logout {
+            color: var(--accent-red);
+        }
+
+        /* Digital Stats Bar */
+        .daily-stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 1rem;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .stat-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            font-weight: 700;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: white;
+        }
+
+        /* Ticket-Style Bill Card */
+        .bill-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            padding: 1.5rem;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 1.5rem;
+        }
+
+        .bill-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 4px;
+            background: var(--secondary-glow);
+            border-radius: 16px 16px 0 0;
+        }
+
+        .bill-card.pulse-border::before {
+            background: linear-gradient(90deg, var(--secondary-glow) 0%, var(--primary-glow) 100%);
+            animation: pulse-glow 2s infinite;
+        }
+
+        @keyframes pulse-glow {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .table-no {
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: white;
+            line-height: 1;
+        }
+
+        .bill-items {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 1.5rem 0;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .bill-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.4rem 0;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            font-weight: 500;
+        }
+
+        .item-qty {
+            color: white;
+            font-weight: 800;
+            margin-right: 0.5rem;
+        }
+
+        .order-comment {
+            background: rgba(255,157,0,0.05);
+            border-left: 3px solid var(--primary-glow);
+            padding: 0.8rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            color: white;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Tab Navigation */
+        .cashier-tabs {
+            display: flex;
+            gap: 0.8rem;
+            margin: 2.5rem 0 1.5rem 0;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 1.2rem;
+            overflow-x: auto;
+        }
+
+        .cashier-tab {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-dim);
+            padding: 0.6rem 1.2rem;
+            border-radius: 99px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .cashier-tab.active {
+            background: var(--primary-glow);
+            color: black;
+            border-color: var(--primary-glow);
+            box-shadow: 0 0 20px rgba(255, 157, 0, 0.2);
+        }
+
+        /* Floor View & Collapsible */
+        .collapsible-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            padding: 1rem 1.2rem;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--glass-border);
+            border-top: 2px solid var(--primary-glow);
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+
+        .collapsible-header h3 {
+            font-size: 0.85rem;
+            font-weight: 900;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            color: var(--primary-glow);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .floor-map-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 0.8rem;
+            margin-bottom: 2rem;
+        }
+
+        .floor-table-cell {
+            aspect-ratio: 1;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 900;
+            transition: all 0.3s ease;
+        }
+
+        .floor-table-cell .ft-number { font-size: 1.2rem; }
+        .floor-table-cell .ft-name { font-size: 0.6rem; opacity: 0.6; margin-top: 2px; }
+
+        .floor-table-cell.free { background: rgba(34, 197, 94, 0.05); border: 1px solid rgba(34, 197, 94, 0.2); color: #22c55e; }
+        .floor-table-cell.occupied { background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2); color: #ef4444; }
+        .floor-table-cell.bill_requested { background: rgba(255, 157, 0, 0.05); border: 1.5px solid var(--primary-glow); color: var(--primary-glow); animation: pulse-glow 2s infinite; }
+
+        /* Empty State */
+        .empty-state {
+            grid-column: 1 / -1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 5rem 1rem;
+            text-align: center;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-glow);
+            opacity: 0.4;
+            filter: drop-shadow(0 0 15px rgba(255, 157, 0, 0.2));
+        }
+
+        .empty-state p { font-size: 1rem; font-weight: 800; color: white; margin-bottom: 0.5rem; }
+        .empty-state span { font-size: 0.8rem; color: var(--text-dim); font-weight: 500; }
+
+        /* Utility buttons & Modals */
+        .paid-btn {
+            border: none;
+            padding: 0.8rem;
+            border-radius: 8px;
+            font-weight: 900;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); backdrop-filter: blur(8px);
+            display: none; align-items: center; justify-content: center; z-index: 2000;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-content {
+            background: #020205; border: 1px solid var(--glass-border); padding: 2rem; border-radius: 20px;
+            width: 90%; max-width: 450px;
+        }
+
+        .input-field label { color: var(--text-dim); font-size: 0.65rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 0.5rem; }
+        .input-field input, .input-field select {
+            width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);
+            padding: 0.8rem; border-radius: 10px; color: white; margin-bottom: 1.2rem;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        /* ===== MOBILE RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            .header-left {
+                align-items: center;
+            }
+            .header-right {
+                width: 100%;
+                justify-content: space-between;
+                background: rgba(255,255,255,0.02);
+                padding: 0.5rem;
+                border-radius: 10px;
+                border: 1px solid var(--glass-border);
+            }
+            .nav-btn {
+                padding: 0.5rem 0.7rem;
+                font-size: 0.8rem;
+                border: none;
+                background: transparent;
+            }
+            .nav-btn span { display: none; }
+            .nav-btn i { font-size: 1.15rem; }
+
+            .daily-stats-bar {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.8rem;
+            }
+            .stat-value { font-size: 1.2rem; }
+
+            .cashier-tabs {
+                gap: 0.5rem;
+                margin: 1.5rem 0 1rem 0;
+                padding-bottom: 0.8rem;
+            }
+            .cashier-tab {
+                padding: 0.5rem 0.9rem;
+                font-size: 0.7rem;
+            }
+
+            .floor-map-grid {
+                grid-template-columns: repeat(auto-fill, minmax(65px, 1fr));
+                gap: 0.5rem;
+            }
+
+            .bill-card { padding: 1rem; }
+            .table-no { font-size: 1.2rem; }
+
+            .modal-content {
+                width: 95%;
+                padding: 1.5rem;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .daily-stats-bar {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <style id="auth-cloak">body { display: none !important; }</style>
+</head>
+
+<body>
+    <div class="container" style="max-width: 1400px; margin: 0 auto; padding: 0 1.5rem;">
+        <header>
+            <div class="header-left">
+                <h1 class="logo">POS DASHBOARD</h1>
+                <span id="license-expiry-display" style="font-size: 0.65rem; color: var(--text-dim); font-weight: 700; text-transform: uppercase;">Loading license...</span>
+            </div>
+
+            <div class="header-right">
+                <a href="../kitchen/" class="nav-btn"><i class="fas fa-utensils"></i> <span>KITCHEN</span></a>
+                <button onclick="openStoreSettingsModal()" class="nav-btn">
+                    <i class="fas fa-cog"></i> <span>SETTINGS</span>
+                </button>
+                <a href="#" onclick="logout()" class="nav-btn logout"><i class="fas fa-power-off"></i></a>
+            </div>
+        </header>
+
+        <!-- Daily Stats Bar (Digital Gauges) -->
+        <div class="daily-stats-bar">
+            <div class="stat-card">
+                <span class="stat-label">Active Bills</span>
+                <span id="active-bills-count" class="stat-value">0</span>
+            </div>
+            <div class="stat-card" style="border-left: 3px solid var(--success-neon);">
+                <span class="stat-label">Net Revenue</span>
+                <span id="daily-revenue" class="stat-value" style="color: var(--success-neon);">₹0</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Payment Breakdown</span>
+                <div style="display: flex; gap: 1rem; font-weight: 700; font-size: 0.85rem; margin-top: 0.3rem;">
+                    <span title="Cash" style="color: white;"><i class="fas fa-money-bill-wave" style="font-size: 0.7rem;"></i> <span id="daily-revenue-cash">₹0</span></span>
+                    <span title="Online" style="color: var(--primary-glow);"><i class="fas fa-qrcode" style="font-size: 0.7rem;"></i> <span id="daily-revenue-online">₹0</span></span>
+                </div>
+            </div>
+            <button class="nav-btn" onclick="sendDailyReport()" style="background: var(--success-neon); color: black; border: none; height: 100%; font-weight: 800; font-size: 0.7rem;">
+                <i class="fab fa-whatsapp"></i> DAILY REPORT
+            </button>
+        </div>
+
+        <!-- Floor Map -->
+        <div class="glass collapsible-header" id="floor-map-toggle" onclick="toggleFloorMap()">
+            <h3><i class="fas fa-th" style="color: var(--primary);"></i> Floor View</h3>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+        </div>
+        <div id="floor-map-container" class="floor-map-grid">
+            <!-- Floor map cells injected by JS -->
+        </div>
+
+        <div id="bills-container" class="cashier-grid">
+            <div class="empty-state">
+                <i class="fas fa-file-invoice-dollar fa-4x" style="margin-bottom: 1rem"></i>
+                <p>No active bills. Happy hunting!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- License/Suspension Overlay -->
+    <div id="license-overlay"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 99999; flex-direction: column; align-items: center; justify-content: center; color: white; text-align: center; padding: 2rem; backdrop-filter: blur(10px);">
+        <div
+            style="background: rgba(255,255,255,0.05); padding: 3rem; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); max-width: 500px; width: 100%;">
+            <div style="font-size: 4rem; color: #FF4B2B; margin-bottom: 1.5rem;"><i
+                    class="fas fa-exclamation-triangle"></i></div>
+            <h2 style="font-size: 2rem; font-weight: 800; margin-bottom: 1rem; letter-spacing: -1px;">SERVICE SUSPENDED
+            </h2>
+            <p id="license-msg" style="color: #a0a0a0; margin-bottom: 2rem; line-height: 1.6;">Your subscription has
+                expired or the service has been temporarily disabled. Please contact the administrator to renew.</p>
+            <a href="https://wa.me/918949417812"
+                style="background: #25D366; color: white; text-decoration: none; padding: 1rem 2rem; border-radius: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.5rem;">
+                <i class="fab fa-whatsapp"></i> CONTACT ADMIN
+            </a>
+        </div>
+    </div>
+
+    <!-- Store Settings Modal -->
+    <div id="store-settings-modal" class="modal-overlay">
+        <div class="modal-content glass" style="max-width: 350px;">
+            <div class="modal-header">
+                <h2>Table Settings</h2>
+                <button onclick="closeStoreSettingsModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div style="margin-top: 1.5rem;">
+                <div class="input-field">
+                    <label>Max Tables</label>
+                    <input type="number" id="setting-table-limit" min="1" value="20">
+                </div>
+                <button class="paid-btn" style="margin-top: 1rem;" onclick="saveStoreSettings()" id="save-settings-btn">SAVE CHANGES</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Modifier Modal -->
+    <div id="modifier-modal" class="modal-overlay">
+        <div class="modal-content glass" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2>Add Charge / Discount</h2>
+                <button onclick="closeModifierModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div style="margin-top: 1rem;">
+                <input type="hidden" id="mod-session-id">
+                <div class="input-field">
+                    <label>Type</label>
+                    <select id="mod-type">
+                        <option value="charge" style="color: black;">➕ Extra Charge (e.g. GST)</option>
+                        <option value="discount" style="color: black;">➖ Discount</option>
+                    </select>
+                </div>
+                <div class="input-field">
+                    <label>Label</label>
+                    <input type="text" id="mod-label" placeholder="e.g. GST, Loyal Customer...">
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <div class="input-field" style="flex: 1;">
+                        <label>Value Type</label>
+                        <select id="mod-is-percentage">
+                            <option value="true" style="color: black;">Percentage (%)</option>
+                            <option value="false" style="color: black;">Fixed Amount (₹)</option>
+                        </select>
+                    </div>
+                    <div class="input-field" style="flex: 1;">
+                        <label>Amount</label>
+                        <input type="number" id="mod-value" placeholder="0" min="0" step="0.01">
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 0.5rem; font-weight: 600; text-transform: uppercase;">Quick Select</label>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <button class="cashier-tab" onclick="applyQuickMod('charge', 'GST', true, 5)">+ 5% GST</button>
+                        <button class="cashier-tab" onclick="applyQuickMod('discount', 'Discount', true, 10)">- 10% Off</button>
+                        <button class="cashier-tab" onclick="applyQuickMod('discount', 'Discount', true, 20)">- 20% Off</button>
+                    </div>
+                </div>
+
+                <button class="paid-btn" onclick="saveModifier()">APPLY</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-check-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+    <script src="../js/firebase-config.js"></script>
+    <script src="../js/license.js"></script>
+    <script>
+        firebase.auth().onAuthStateChanged((user) => {
+            if (!user) {
+                window.location.href = '../admin/login.html';
+            } else {
+                document.getElementById('auth-cloak')?.remove();
+            }
+        });
+        function logout() {
+            firebase.auth().signOut().then(() => window.location.href = '../admin/login.html');
+        }
+    </script>
+    <script src="../js/cashier.js"></script>
+</body>
+
+</html>

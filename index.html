@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0a0a0f">
+    <meta name="description"
+        content="DesignE Digital Menu — Browse our delicious menu, place orders, and pay seamlessly from your phone.">
+    <title>DesignE | Digital Menu</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1 class="logo">DesignE</h1>
+            <p style="color: var(--text-muted)">Crafting flavors, one order at a time.</p>
+        </header>
+
+        <div class="search-wrapper" style="margin-bottom: 2rem;">
+            <div class="search-bar glass">
+                <i class="fas fa-search"></i>
+                <input type="text" id="menu-search" placeholder="Search for dishes, drinks...">
+            </div>
+        </div>
+
+        <div class="tabs-wrapper">
+            <nav class="tabs">
+                <div id="tab-indicator" class="gliding-indicator"></div>
+                <button class="tab-btn active" data-category="starter">Starters</button>
+                <button class="tab-btn" data-category="main">Main Course</button>
+                <button class="tab-btn" data-category="drinks">Drinks</button>
+            </nav>
+        </div>
+
+        <!-- Offers Section -->
+        <section id="offers-section" style="margin-bottom: 3rem; display: none;">
+            <div class="section-header"
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2 style="font-size: 1.1rem; font-weight: 800; color: var(--primary); letter-spacing: 0.05em;">TODAY'S
+                    SPECIAL DEALS</h2>
+                <div class="scroll-indicators" style="display: flex; gap: 0.5rem;">
+                    <div class="dot active"></div>
+                    <div class="dot"></div>
+                </div>
+            </div>
+            <div id="offers-container" class="offers-carousel">
+                <!-- Offers injected by JS -->
+            </div>
+        </section>
+
+        <main id="menu-container" class="menu-grid">
+            <!-- Items injected by JS -->
+            <div class="loading" style="grid-column: 1/-1; text-align: center; padding: 3rem; opacity: 0.5;">
+                <i class="fas fa-circle-notch fa-spin fa-3x" style="color: var(--primary)"></i>
+                <p style="margin-top: 1rem; font-weight: 600; letter-spacing: 0.02em;">PREPARING YOUR MENU...</p>
+            </div>
+        </main>
+
+        <!-- Bottom Spacer to prevent overlap with fixed bar -->
+        <div style="height: 15rem;"></div>
+    </div>
+
+    <!-- Bottom Bar Navigation (Cart & Bill) -->
+    <div id="bottom-bar" class="bottom-bar glass">
+        <div class="cart-info" id="bar-cart-trigger">
+            <div class="cart-icon-wrapper">
+                <i class="fas fa-shopping-basket"></i>
+                <div id="bar-cart-count" class="bar-cart-count">0</div>
+            </div>
+            <div class="cart-text">
+                <span class="total-label">Your Cart</span>
+                <span id="bar-cart-total" class="total-value">₹0</span>
+            </div>
+        </div>
+        <div class="bar-actions">
+            <button id="bar-order-status-btn" class="bar-btn outline" style="display: none; background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2);">
+                <i class="fas fa-clock"></i> STATUS
+            </button>
+            <button id="bar-request-bill-btn" class="bar-btn outline" style="display: none;">
+                <i class="fas fa-file-invoice-dollar"></i> BILL
+            </button>
+            <button id="bar-open-cart-btn" class="bar-btn primary">
+                VIEW CART
+            </button>
+        </div>
+    </div>
+
+    <!-- Call Waiter Floating Button -->
+    <button id="call-waiter-btn" class="call-waiter-btn glass" onclick="callWaiter()">
+        <i class="fas fa-bell"></i>
+        <span>Call Waiter</span>
+    </button>
+
+    <!-- Cart Modal -->
+    <div id="cart-modal" class="modal-overlay">
+        <div class="modal-content glass">
+            <div class="modal-header">
+                <h2>Your Cart</h2>
+                <button id="close-cart"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="cart-items-list">
+                <!-- Items here -->
+            </div>
+            <div class="cart-summary">
+                <div class="total-row">
+                    <span>Total Amount:</span>
+                    <span id="cart-total">₹0</span>
+                </div>
+                <div class="order-comment-box" style="margin-top: 1rem;">
+                    <label for="order-comment"
+                        style="display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.4rem;">Special
+                        Instructions (Optional)</label>
+                    <textarea id="order-comment" placeholder="keep the food spicy or make it jain food..."
+                        style="width: 100%; height: 60px; padding: 0.8rem; border-radius: 12px; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.03); color: white; font-family: inherit; resize: none;"></textarea>
+                </div>
+                <button id="place-order-btn" class="add-btn"
+                    style="background: var(--primary); color: white; margin-top: 1rem; height: 50px; font-weight: 800;">PLACE
+                    ORDER</button>
+                <button id="request-bill-btn" class="add-btn"
+                    style="background: var(--accent-drinks); color: white; margin-top: 0.5rem; display: none;">REQUEST
+                    BILL</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bill Summary Modal -->
+    <div id="bill-summary-modal" class="modal-overlay">
+        <div class="modal-content glass">
+            <div class="modal-header">
+                <h2>Order Summary</h2>
+                <button id="close-bill-summary"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="bill-items-list" style="max-height: 50vh; overflow-y: auto; margin: 1rem 0;">
+                <!-- Session items will be injected here -->
+            </div>
+            <div class="cart-summary">
+                <div class="total-row" style="border-top: 1px dashed var(--glass-border); padding-top: 1rem;">
+                    <span style="font-weight: 800;">Total Bill Amount:</span>
+                    <span id="bill-summary-total" style="font-weight: 800; color: var(--primary); font-size: 1.5rem;">₹0</span>
+                </div>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin: 1rem 0; line-height: 1.4;">
+                    <i class="fas fa-info-circle"></i> This summary includes all items ordered in this session. Once you request the bill, the waiter will bring it to your table.
+                </p>
+                <button id="pay-now-btn" class="add-btn"
+                    style="background: var(--accent-starter); color: white; height: 55px; font-weight: 800; font-size: 1.1rem; margin-bottom: 0.75rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; box-shadow: 0 8px 20px rgba(16, 185, 129, 0.2);">
+                    <i class="fas fa-qrcode"></i> PAY ONLINE NOW
+                </button>
+                <button id="confirm-bill-btn" class="add-btn"
+                    style="background: var(--accent-drinks); color: white; height: 55px; font-weight: 800; font-size: 1.1rem; box-shadow: 0 8px 20px rgba(59, 130, 246, 0.2);">
+                    CONFIRM & REQUEST BILL
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <i class="fas fa-check-circle"></i>
+        <span>Item added to cart!</span>
+    </div>
+
+    <!-- Welcome / Table Selection Modal -->
+    <div id="welcome-modal" class="modal-overlay active" style="z-index: 9999;">
+        <div class="modal-content" style="text-align: center; max-width: 450px; padding: 2.5rem 2rem;">
+            <div class="welcome-header" style="margin-bottom: 2rem;">
+                <div class="welcome-icon"
+                    style="width: 80px; height: 80px; background: var(--primary-soft); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem auto; color: var(--primary); font-size: 2.5rem;">
+                    <i class="fas fa-utensils"></i>
+                </div>
+                <h1 style="font-size: 2.2rem; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 0.5rem;">Bon
+                    Appétit!</h1>
+                <p style="color: var(--text-muted); font-size: 1rem; line-height: 1.5;">Welcome to <span
+                        class="primary-brand-name" style="color: var(--primary); font-weight: 700;">DesignE</span>. Let's get you set up for a
+                    great meal.</p>
+            </div>
+
+            <div class="welcome-form">
+                <div class="input-field">
+                    <label>Your Name</label>
+                    <input type="text" id="welcome-name" placeholder="Enter your name">
+                </div>
+                <div class="input-row">
+                    <div class="input-field">
+                        <label>Table #</label>
+                        <input type="number" id="welcome-table-no" placeholder="00" min="1">
+                    </div>
+                    <div class="input-field">
+                        <label>WhatsApp Number</label>
+                        <input type="tel" id="welcome-phone" placeholder="98765 43210">
+                    </div>
+                </div>
+            </div>
+
+            <p id="table-error"
+                style="color: var(--accent-main); margin-top: 1.5rem; display: none; font-weight: 600; font-size: 0.9rem; background: rgba(239, 44, 44, 0.1); padding: 0.75rem; border-radius: 10px; border-left: 4px solid var(--accent-main);">
+            </p>
+
+            <button id="start-order-btn" class="add-btn"
+                style="background: var(--primary); color: white; margin-top: 2rem; padding: 1.1rem; font-size: 1.1rem; font-weight: 800; border-radius: 15px; box-shadow: var(--shadow-glow);">
+                EXPLORE MENU
+            </button>
+            <p style="margin-top: 1.5rem; font-size: 0.8rem; color: var(--text-muted);">Quick and easy digital ordering
+            </p>
+        </div>
+    </div>
+
+    <!-- License/Suspension Overlay -->
+    <div id="license-overlay"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 99999; flex-direction: column; align-items: center; justify-content: center; color: white; text-align: center; padding: 2rem; backdrop-filter: blur(10px);">
+        <div
+            style="background: rgba(255,255,255,0.05); padding: 3rem; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); max-width: 500px; width: 100%;">
+            <div style="font-size: 4rem; color: #FF4B2B; margin-bottom: 1.5rem;"><i
+                    class="fas fa-exclamation-triangle"></i></div>
+            <h2 style="font-size: 2rem; font-weight: 800; margin-bottom: 1rem; letter-spacing: -1px;">SERVICE SUSPENDED
+            </h2>
+            <p id="license-msg" style="color: #a0a0a0; margin-bottom: 2rem; line-height: 1.6;">Your subscription has
+                expired or the service has been temporarily disabled. Please contact the administrator to renew.</p>
+            <a href="https://wa.me/918949417812"
+                style="background: #25D366; color: white; text-decoration: none; padding: 1rem 2rem; border-radius: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.5rem;">
+                <i class="fab fa-whatsapp"></i> CONTACT ADMIN
+            </a>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-check-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+    <script src="js/firebase-config.js"></script>
+    <script src="js/license.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>

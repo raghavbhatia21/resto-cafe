@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0a0a0f">
+    <title>Owner Dashboard | DesignE</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        :root {
+            --bg-dark: #020205;
+            --primary-glow: #ff9d00;
+            --secondary-glow: #00d2ff;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-dim: #888899;
+            --success-neon: #22c55e;
+        }
+
+        body {
+            background: var(--bg-dark);
+            color: white;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 100% 0%, rgba(255, 157, 0, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 0% 100%, rgba(0, 210, 255, 0.05) 0%, transparent 50%);
+            min-height: 100vh;
+        }
+
+        /* Minimalist Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--glass-border);
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, var(--primary-glow), var(--secondary-glow));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+            line-height: 1;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .nav-btn {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-dim);
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255,255,255,0.08);
+            color: white;
+            border-color: rgba(255,255,255,0.2);
+        }
+
+        .nav-btn.logout {
+            color: #ef4444;
+        }
+
+        /* History View Styles */
+        .history-controls {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 1.2rem;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .history-controls input[type="date"] {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: white;
+            padding: 0.8rem 1rem;
+            border-radius: 12px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            outline: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            width: 160px;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        .history-controls input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            opacity: 0.5;
+            cursor: pointer;
+        }
+
+        .history-controls input[type="date"]:focus {
+            border-color: var(--primary-glow);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 20px rgba(255, 157, 0, 0.15);
+        }
+
+        .history-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .history-stat-card {
+            padding: 1.5rem;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .history-stat-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .history-stat-card .stat-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-dim);
+            font-weight: 700;
+        }
+
+        .history-stat-card .stat-value {
+            font-size: 2rem;
+            font-weight: 900;
+        }
+
+        .history-stat-card > i {
+            position: absolute;
+            right: 1.5rem;
+            top: 1.5rem;
+            font-size: 1.2rem;
+            opacity: 0.2;
+        }
+
+        .payment-badge {
+            text-transform: uppercase;
+            font-weight: 800;
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.65rem;
+            letter-spacing: 0.5px;
+        }
+
+        .payment-badge.online {
+            background: rgba(0, 210, 255, 0.1);
+            color: var(--secondary-glow);
+            border: 1px solid rgba(0, 210, 255, 0.2);
+        }
+
+        .payment-badge.cash {
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--success-neon);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .history-item-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .history-item-card:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 5rem 1rem;
+            text-align: center;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-glow);
+            opacity: 0.4;
+            filter: drop-shadow(0 0 15px rgba(255, 157, 0, 0.2));
+        }
+
+        .empty-state p { font-size: 1rem; font-weight: 800; color: white; margin-bottom: 0.5rem; }
+        .empty-state span { font-size: 0.8rem; color: var(--text-dim); font-weight: 500; }
+
+        .paid-btn {
+            border: none;
+            padding: 0.8rem;
+            border-radius: 8px;
+            font-weight: 900;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .owner-section {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-header {
+            font-size: 1.2rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            color: var(--primary-glow);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .input-field {
+            margin-bottom: 1.2rem;
+        }
+
+        .input-field label {
+            color: var(--text-dim);
+            font-size: 0.65rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .input-field input {
+            width: 100%;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--glass-border);
+            padding: 0.8rem;
+            border-radius: 10px;
+            color: white;
+            font-family: inherit;
+            font-size: 0.9rem;
+            box-sizing: border-box;
+        }
+
+        .input-field input:focus {
+            outline: none;
+            border-color: var(--primary-glow);
+            background: rgba(255,255,255,0.06);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+        }
+
+        /* Verification Overlay */
+        .auth-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-dark);
+            z-index: 100000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(20px);
+        }
+
+        .auth-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--glass-border);
+            padding: 3rem;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+        }
+
+        .auth-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 157, 0, 0.1);
+            color: var(--primary-glow);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin: 0 auto 1.5rem auto;
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary-glow);
+            color: black;
+            border: none;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 1rem;
+            margin-top: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .auth-btn:hover {
+            transform: scale(1.02);
+            filter: brightness(1.1);
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* Hide main content until verified */
+        .main-content { display: none; }
+    </style>
+    <style id="auth-cloak">body { display: none !important; }</style>
+</head>
+
+<body>
+
+    <!-- Verification Overlay (shown by default) -->
+    <div id="auth-gate" class="auth-overlay">
+        <div class="auth-card">
+            <div class="auth-icon"><i class="fas fa-lock"></i></div>
+            <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.5rem;">Owner Access</h2>
+            <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 2rem;">Please verify your identity to continue to the owner dashboard.</p>
+            
+            <div class="input-field" style="text-align: left;">
+                <label>Owner Email</label>
+                <input type="email" id="auth-email" placeholder="owner@yourcafe.com">
+            </div>
+            <div class="input-field" style="text-align: left;">
+                <label>Password</label>
+                <input type="password" id="auth-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')verifyOwnerAccess()">
+            </div>
+            
+            <button class="auth-btn" onclick="verifyOwnerAccess()">VERIFY & UNLOCK</button>
+            <div style="margin-top: 1rem;">
+                <a href="#" onclick="forgotOwnerPassword()" style="color: var(--text-dim); text-decoration: none; font-size: 0.75rem; font-weight: 700;">FORGOT PASSWORD?</a>
+            </div>
+            <p id="auth-error" style="color: #ef4444; font-size: 0.8rem; margin-top: 1rem; font-weight: 700; display: none;">Invalid credentials. Please try again.</p>
+            
+            <a href="../admin/dashboard.html" style="display: block; margin-top: 2rem; color: var(--text-dim); text-decoration: none; font-size: 0.8rem; font-weight: 600;">
+                <i class="fas fa-arrow-left"></i> BACK TO ADMIN PANEL
+            </a>
+        </div>
+    </div>
+
+    <!-- License Overlay -->
+    <div id="license-overlay"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 99999; flex-direction: column; align-items: center; justify-content: center; color: white; text-align: center; padding: 2rem; backdrop-filter: blur(10px);">
+        <div
+            style="background: rgba(255,255,255,0.05); padding: 3rem; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); max-width: 500px; width: 100%;">
+            <div style="font-size: 4rem; color: #FF4B2B; margin-bottom: 1.5rem;"><i
+                    class="fas fa-exclamation-triangle"></i></div>
+            <h2 style="font-size: 2rem; font-weight: 800; margin-bottom: 1rem; letter-spacing: -1px;">SERVICE SUSPENDED
+            </h2>
+            <p id="license-msg" style="color: #a0a0a0; margin-bottom: 2rem; line-height: 1.6;">Your subscription has
+                expired or the service has been temporarily disabled. Please contact the administrator to renew.</p>
+            <a href="https://wa.me/918949417812"
+                style="background: #25D366; color: white; text-decoration: none; padding: 1rem 2rem; border-radius: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.5rem;">
+                <i class="fab fa-whatsapp"></i> CONTACT ADMIN
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content (hidden until owner is verified) -->
+    <div id="main-content" class="main-content">
+        <div class="container" style="max-width: 1400px; margin: 0 auto; padding: 0 1.5rem;">
+            <header>
+                <div class="header-left">
+                    <h1 class="logo">OWNER DASHBOARD</h1>
+                    <span id="license-expiry-display" style="font-size: 0.65rem; color: var(--text-dim); font-weight: 700; text-transform: uppercase;">Loading license...</span>
+                </div>
+
+                <div class="header-right">
+                    <a href="../admin/dashboard.html" class="nav-btn"><i class="fas fa-cog"></i> <span>ADMIN</span></a>
+                    <a href="#" onclick="logout()" class="nav-btn logout"><i class="fas fa-power-off"></i></a>
+                </div>
+            </header>
+
+            <!-- Configuration Section -->
+            <div class="owner-section">
+                <h2 class="section-header"><i class="fas fa-store"></i> Store Configuration</h2>
+                <div class="form-grid">
+                    <div class="input-field">
+                        <label>Store Name</label>
+                        <input type="text" id="setting-store-name" placeholder="e.g. DesignE">
+                    </div>
+                    <div class="input-field">
+                        <label>UPI ID (for payments)</label>
+                        <input type="text" id="setting-upi-id" placeholder="example@upi">
+                    </div>
+                    <div class="input-field">
+                        <label>Owner WhatsApp (for reports)</label>
+                        <input type="text" id="setting-owner-phone" placeholder="10 digit number">
+                    </div>
+                    <div class="input-field">
+                        <label>Next Invoice / Order Number</label>
+                        <input type="number" id="setting-last-invoice-no" placeholder="e.g. 1000">
+                    </div>
+                </div>
+
+                <h3 style="font-size: 0.8rem; font-weight: 800; color: white; margin: 1.5rem 0 1rem 0; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-user-shield" style="color: var(--secondary-glow);"></i> Change Owner Password
+                </h3>
+                <div class="form-grid">
+                    <div class="input-field">
+                        <label>New Owner Password</label>
+                        <input type="password" id="setting-owner-pass" placeholder="Min 6 characters">
+                    </div>
+                    <div class="input-field">
+                        <label>Confirm New Password</label>
+                        <input type="password" id="setting-owner-pass-confirm" placeholder="••••••••">
+                    </div>
+                </div>
+                
+                <p style="font-size: 0.75rem; color: var(--text-dim); margin-bottom: 1.5rem; line-height: 1.4;">
+                    <i class="fas fa-info-circle"></i> These settings instantly sync across all cashier instances and affect bill headers and payment QR codes.
+                </p>
+
+                <button class="paid-btn" style="background: var(--primary-glow); color: black;" onclick="saveOwnerSettings()" id="save-settings-btn">
+                    <i class="fas fa-save"></i> SAVE CONFIGURATION
+                </button>
+            </div>
+
+            <!-- Sales History View -->
+            <div class="owner-section">
+                <h2 class="section-header"><i class="fas fa-chart-bar"></i> Local Sales History</h2>
+                <div id="history-view">
+                    <div class="history-controls">
+                        <div style="display: flex; flex-direction: column; gap: 0.2rem;">
+                            <span style="font-size: 0.65rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase;">From</span>
+                            <input type="date" id="history-start-date" onchange="loadHistory()">
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 0.2rem;">
+                            <span style="font-size: 0.65rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase;">To</span>
+                            <input type="date" id="history-end-date" onchange="loadHistory()">
+                        </div>
+                        <button class="nav-btn" style="height: 42px; margin-top: auto;" onclick="printSalesReport()">
+                            <i class="fas fa-print"></i> PRINT REPORT
+                        </button>
+                    </div>
+
+                    <div class="history-stats">
+                        <div class="history-stat-card glass" style="border-top: 2px solid var(--primary-glow);">
+                            <i class="fas fa-shopping-bag"></i>
+                            <div class="stat-label">Total Orders</div>
+                            <div class="stat-value" id="hist-orders" style="color: var(--primary-glow);">0</div>
+                        </div>
+                        <div class="history-stat-card glass" style="border-top: 2px solid var(--success-neon);">
+                            <i class="fas fa-indian-rupee-sign"></i>
+                            <div class="stat-label">Total Revenue</div>
+                            <div class="stat-value" id="hist-revenue" style="color: var(--success-neon);">₹0</div>
+                            <div style="margin-top: 0.5rem; display: flex; gap: 1rem; font-size: 0.7rem; font-weight: 700;">
+                                <span style="color: var(--text-dim);"><i class="fas fa-money-bill-wave" style="opacity: 1; font-size: 0.7rem; position: static;"></i> CASH: <span id="hist-revenue-cash" style="color: white;">₹0</span></span>
+                                <span style="color: var(--text-dim);"><i class="fas fa-qrcode" style="opacity: 1; font-size: 0.7rem; position: static;"></i> ONLINE: <span id="hist-revenue-online" style="color: var(--secondary-glow);">₹0</span></span>
+                            </div>
+                        </div>
+                        <div class="history-stat-card glass" style="border-top: 2px solid var(--secondary-glow); justify-content: center;">
+                            <i class="fas fa-chart-line"></i>
+                            <div class="stat-label">Avg. Order Value</div>
+                            <div class="stat-value" id="hist-avg" style="color: var(--secondary-glow);">₹0</div>
+                        </div>
+                    </div>
+
+                    <div id="history-list">
+                        <div class="empty-state" style="padding: 3rem;">
+                            <i class="fas fa-calendar-day fa-3x" style="margin-bottom: 1rem; color: var(--primary);"></i>
+                            <p>Select a date to view sales history.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Staff Management Section -->
+            <div class="owner-section">
+                <h2 class="section-header"><i class="fas fa-users"></i> Staff Management</h2>
+                <p style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: 1.5rem;">Create new staff accounts and control who can access the cashier, kitchen, and admin dashboard panels.</p>
+                
+                <!-- Add Staff Account Form -->
+                <h3 style="font-size: 0.8rem; font-weight: 800; color: white; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 1px;">
+                    <i class="fas fa-user-plus" style="color: var(--secondary-glow);"></i> Add New Staff Account
+                </h3>
+                <form id="add-staff-form" onsubmit="event.preventDefault(); addStaffAccount();" style="margin-bottom: 2rem;">
+                    <div class="form-grid">
+                        <div class="input-field">
+                            <label>Staff Email</label>
+                            <input type="email" id="new-staff-email" required placeholder="staff@yourcafe.com">
+                        </div>
+                        <div class="input-field">
+                            <label>Staff Password</label>
+                            <input type="password" id="new-staff-pass" required placeholder="Min 6 characters">
+                        </div>
+                    </div>
+                    <button type="submit" id="add-staff-btn" class="paid-btn" style="background: var(--secondary-glow); color: black;">
+                        <i class="fas fa-plus"></i> REGISTER & AUTHORIZE STAFF
+                    </button>
+                </form>
+
+                <!-- Whitelisted Staff List -->
+                <h3 style="font-size: 0.8rem; font-weight: 800; color: white; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 1px;">
+                    <i class="fas fa-list-ul" style="color: var(--primary-glow);"></i> Authorized Staff Accounts Whitelist
+                </h3>
+                <div id="staff-list-container" style="background: rgba(255, 255, 255, 0.02); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--glass-border);">
+                    <div class="empty-state" style="padding: 1.5rem 0;" id="staff-empty-state">
+                        <i class="fas fa-user-shield fa-2x" style="opacity: 0.3; margin-bottom: 0.5rem;"></i>
+                        <p style="font-size: 0.9rem;">No staff accounts registered.</p>
+                    </div>
+                    <ul id="staff-list" style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.8rem;">
+                        <!-- Staff items injected by JS -->
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Danger Zone -->
+            <div class="owner-section" style="border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.02);">
+                <h2 class="section-header" style="color: #ef4444;"><i class="fas fa-exclamation-triangle"></i> Danger Zone</h2>
+                <p style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: 1rem;">Keep the system fast by clearing old data. Previous financial year data is automatically purged by default.</p>
+                <button class="paid-btn" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); font-size: 0.85rem; padding: 0.8rem;" onclick="clearAllSessions()">
+                    <i class="fas fa-trash-alt"></i> CLEAR ALL SESSION DATA
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-check-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+    <script src="../js/firebase-config.js"></script>
+    <script src="../js/license.js"></script>
+    <script>
+        firebase.auth().onAuthStateChanged((user) => {
+            if (!user) {
+                window.location.href = '../admin/login.html';
+            } else {
+                document.getElementById('auth-cloak')?.remove();
+            }
+        });
+        function logout() {
+            firebase.auth().signOut().then(() => window.location.href = '../admin/login.html');
+        }
+    </script>
+    <script src="../js/owner.js"></script>
+</body>
+
+</html>

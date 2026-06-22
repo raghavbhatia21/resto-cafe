@@ -1,0 +1,119 @@
+{
+  "rules": {
+    "rate_limits": {
+      ".read": "false",
+      ".write": "false"
+    },
+    "settings": {
+      ".read": "true",
+      ".write": "auth != null && (!data.exists() || !root.child('settings_private/superAdminEmail').exists() || auth.token.email === root.child('settings_private/superAdminEmail').val() || auth.token.email === 'raghavbhatia332@gmail.com')",
+      "lastInvoiceNo": {
+        ".write": "true",
+        ".validate": "newData.isNumber() && (!data.exists() ? newData.val() >= 1000 : (newData.val() === data.val() + 1 || (auth != null && (auth.token.email === 'raghavbhatia332@gmail.com' || auth.token.email === root.child('settings_private/superAdminEmail').val()))))"
+      }
+    },
+    "settings_private": {
+      ".read": "auth != null && (auth.token.email === 'raghavbhatia332@gmail.com' || auth.token.email === data.child('superAdminEmail').val() || !data.exists())",
+      "ownerPhone": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      },
+      "upiId": {
+        ".read": "auth != null && (auth.token.email === 'raghavbhatia332@gmail.com' || auth.token.email === root.child('settings_private/superAdminEmail').val())",
+        ".write": "auth != null && (auth.token.email === 'raghavbhatia332@gmail.com' || auth.token.email === root.child('settings_private/superAdminEmail').val())"
+      },
+      "ownerId": {
+        ".read": "auth != null && (auth.token.email === 'raghavbhatia332@gmail.com' || auth.token.email === root.child('settings_private/superAdminEmail').val())",
+        ".write": "auth != null && (auth.token.email === 'raghavbhatia332@gmail.com' || auth.token.email === root.child('settings_private/superAdminEmail').val())"
+      },
+      "ownerPass": {
+        ".read": "auth != null && (auth.token.email === 'raghavbhatia332@gmail.com' || auth.token.email === root.child('settings_private/superAdminEmail').val())",
+        ".write": "auth != null && (auth.token.email === 'raghavbhatia332@gmail.com' || auth.token.email === root.child('settings_private/superAdminEmail').val())"
+      },
+      "superAdminEmail": {
+        ".read": "auth != null",
+        ".write": "auth != null && (!data.exists() || auth.token.email === data.val() || auth.token.email === 'raghavbhatia332@gmail.com')"
+      },
+      "staff": {
+        ".read": "auth != null",
+        ".write": "auth != null && (auth.token.email === 'raghavbhatia332@gmail.com' || auth.token.email === root.child('settings_private/superAdminEmail').val())"
+      },
+      ".write": "auth != null && !data.exists()"
+    },
+    "menu": {
+      ".read": "true",
+      ".write": "auth != null && (auth.token.email === 'raghavbhatia332@gmail.com' || auth.token.email === root.child('settings_private/superAdminEmail').val())",
+      ".indexOn": ["category"]
+    },
+    "offers": {
+      ".read": "true",
+      ".write": "auth != null && (auth.token.email === 'raghavbhatia332@gmail.com' || auth.token.email === root.child('settings_private/superAdminEmail').val())"
+    },
+    "categories": {
+      ".read": "true",
+      ".write": "auth != null && (auth.token.email === 'raghavbhatia332@gmail.com' || auth.token.email === root.child('settings_private/superAdminEmail').val())",
+      ".indexOn": ["order"]
+    },
+    "sessions": {
+      ".read": "auth != null",
+      ".write": "auth != null && (auth.token.email === 'raghavbhatia332@gmail.com' || auth.token.email === root.child('settings_private/superAdminEmail').val())",
+      ".indexOn": ["status", "settledAt"],
+      "$sessionId": {
+        ".read": "true",
+        ".write": "auth != null || (!data.exists() && newData.exists() && newData.child('status').val() === 'active') || (data.exists() && data.child('status').val() != 'completed' && newData.child('status').val() != 'completed' && (!data.child('tableNo').exists() || newData.child('tableNo').val() === data.child('tableNo').val()) && (!data.child('customerPhone').exists() || newData.child('customerPhone').val() === data.child('customerPhone').val()))",
+        "status": {
+          ".validate": "newData.isString() && (newData.val() === 'active' || newData.val() === 'bill_requested' || auth != null)"
+        },
+        "total": {
+          ".validate": "auth != null || !data.exists() || (newData.isNumber() && newData.val() >= data.val())"
+        },
+        "subtotal": {
+          ".validate": "auth != null || !data.exists() || (newData.isNumber() && newData.val() >= data.val())"
+        },
+        "modifiers": {
+          ".validate": "auth != null"
+        },
+        "paymentMethod": {
+          ".validate": "auth != null"
+        },
+        "settledAt": {
+          ".validate": "auth != null"
+        }
+      }
+    },
+    "orders": {
+      ".read": "auth != null || (query.orderByChild === 'sessionId' && query.equalTo != null)",
+      ".indexOn": ["timestamp", "sessionId"],
+      "$orderId": {
+        ".write": "!data.exists() || auth != null",
+        ".validate": "!newData.exists() || (newData.hasChildren(['tableNo', 'items', 'sessionId', 'timestamp']) && root.child('tables').child('table_' + newData.child('tableNo').val()).child('sessionId').val() === newData.child('sessionId').val())"
+      }
+    },
+    "tables": {
+      ".read": "auth != null",
+      "$tableId": {
+        ".read": "true",
+        ".write": "auth != null || !data.exists() || data.child('status').val() === 'free' || data.child('status').val() === null",
+        ".validate": "newData.hasChildren(['status']) && newData.child('status').isString() && (auth != null || (newData.child('status').val() === 'occupied' && newData.hasChild('sessionId') && newData.child('sessionId').isString()))"
+      }
+    },
+    "waiter_calls": {
+      ".read": "auth != null || (query.orderByChild === 'sessionId' && query.equalTo != null)",
+      ".indexOn": ["sessionId"],
+      "$callId": {
+        ".write": "!data.exists() || auth != null",
+        ".validate": "!newData.exists() || (newData.hasChildren(['tableNo', 'customerName', 'timestamp', 'status', 'sessionId']) && root.child('tables').child('table_' + newData.child('tableNo').val()).child('sessionId').val() === newData.child('sessionId').val())"
+      }
+    },
+    "customers": {
+      ".read": "auth != null",
+      ".indexOn": ["lastVisit", "visits", "name"],
+      "$phoneKey": {
+        ".write": "true",
+        ".validate": "!newData.exists() || (newData.hasChildren(['name', 'phone']) && newData.child('phone').isString() && newData.child('name').isString() && (auth != null || (!data.exists() && newData.child('visits').val() === 1 && newData.child('totalSpent').val() === 0) || (data.exists() && newData.child('totalSpent').val() === data.child('totalSpent').val() && (newData.child('visits').val() === data.child('visits').val() || newData.child('visits').val() === data.child('visits').val() + 1))))"
+      }
+    },
+    ".read": "false",
+    ".write": "false"
+  }
+}

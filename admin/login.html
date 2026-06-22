@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | DesignE Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 400px;
+            padding: 2rem;
+            text-align: center;
+            margin: 0 1rem;
+        }
+
+        .login-form {
+            margin-top: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .input-group {
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 0.5rem;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Mobile specific adjustments */
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 1.5rem;
+                margin: 0;
+                border: none;
+                border-radius: 0;
+                height: 100vh;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                backdrop-filter: none;
+                background: var(--bg-dark);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 1.5rem 0;">
+        <!-- Standard Login Card -->
+        <div id="login-card" class="login-card glass">
+            <h1 class="logo">DesignE</h1>
+            <p style="color: var(--text-muted)">Admin Authentication</p>
+
+            <form id="login-form" class="login-form">
+                <div class="input-group">
+                    <label>Email Access Code</label>
+                    <input type="email" id="email" required placeholder="admin@designe.com">
+                </div>
+                <div class="input-group">
+                    <label>Security Password</label>
+                    <input type="password" id="password" required placeholder="••••••••">
+                </div>
+                <button type="submit" id="login-btn" class="add-btn"
+                    style="background: var(--primary); color: white; padding: 1rem; font-size: 1rem; font-weight: 800;">ACCESS
+                    DASHBOARD</button>
+            </form>
+            <div style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.8rem;">
+                <a href="#" onclick="forgotPassword()" style="color: var(--text-muted); text-decoration: none; font-size: 0.85rem; font-weight: 600;">Forgot Password?</a>
+            </div>
+            <p id="error-msg" style="color: var(--accent-main); margin-top: 1rem; display: none; font-size: 0.9rem; background: rgba(239, 68, 68, 0.1); padding: 0.75rem; border-radius: 10px; border: 1px solid rgba(239, 68, 68, 0.2);"></p>
+        </div>
+
+        <!-- Setup Card (Onboarding Setup Wizard) -->
+        <div id="setup-card" class="login-card glass" style="display: none; max-width: 500px; padding: 2.5rem; border-radius: 1.5rem; text-align: center; margin: 1rem;">
+            <h1 class="logo" style="background: linear-gradient(135deg, var(--primary), #00d2ff); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;">CafeResto</h1>
+            <p style="color: var(--primary); font-weight: 800; font-size: 1.1rem; margin-top: 0.2rem; text-transform: uppercase; letter-spacing: 0.5px;">First-Time Restaurant Setup</p>
+            <p style="color: var(--text-muted); font-size: 0.8rem; line-height: 1.4; margin-bottom: 1.5rem;">Configure your private database & initial credentials. No manual Firebase console setup is required!</p>
+
+            <form id="setup-form" class="login-form" style="margin-top: 1rem; gap: 1.2rem; text-align: left;" onsubmit="event.preventDefault()">
+                <div class="input-group">
+                    <label>Restaurant Name</label>
+                    <input type="text" id="setup-store-name" required placeholder="e.g. Bella Italia">
+                </div>
+                <div class="input-group">
+                    <label>Owner WhatsApp Number (For Reports)</label>
+                    <input type="text" id="setup-owner-phone" required placeholder="e.g. 9876543210">
+                </div>
+                <div style="border-top: 1px dashed var(--glass-border); margin: 0.5rem 0; opacity: 0.5;"></div>
+                <div class="input-group">
+                    <label>Admin/Staff Dashboard Email</label>
+                    <input type="email" id="setup-admin-email" required placeholder="staff@yourcafe.com">
+                </div>
+                <div class="input-group">
+                    <label>Admin/Staff Dashboard Password</label>
+                    <input type="password" id="setup-admin-pass" required placeholder="Min 6 characters">
+                </div>
+                <div style="border-top: 1px dashed var(--glass-border); margin: 0.5rem 0; opacity: 0.5;"></div>
+                <div class="input-group">
+                    <label>Owner Email (Super Admin Access)</label>
+                    <input type="email" id="setup-owner-email" required placeholder="owner@yourcafe.com">
+                </div>
+                <div class="input-group">
+                    <label>Owner Password</label>
+                    <input type="password" id="setup-owner-pass" required placeholder="Min 6 characters">
+                </div>
+                <button type="button" id="setup-btn" class="add-btn" onclick="initializeRestaurant()"
+                    style="background: var(--primary); color: white; padding: 1rem; font-size: 1rem; font-weight: 800; margin-top: 1rem; border: none; cursor: pointer; transition: all 0.3s ease; width: 100%;">INITIALIZE CAFE RESTO</button>
+            </form>
+            <p id="setup-error-msg" style="color: var(--accent-main); margin-top: 1.5rem; display: none; font-size: 0.9rem; background: rgba(239, 68, 68, 0.1); padding: 0.75rem; border-radius: 10px; border: 1px solid rgba(239, 68, 68, 0.2); text-align: left;"></p>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-check-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="../js/firebase-config.js"></script>
+
+    <script>
+        const loginForm = document.getElementById('login-form');
+        const errorMsg = document.getElementById('error-msg');
+        const loginBtn = document.getElementById('login-btn');
+
+        // Check if database is already initialized (with storeName check for backward-compatibility!)
+        let isInitialCheckDone = false;
+        firebase.database().ref('settings').on('value', (snap) => {
+            if (isInitialCheckDone) return;
+            isInitialCheckDone = true;
+
+            const settings = snap.val() || {};
+            const initialized = settings.initialized === true || (settings.storeName && settings.storeName.trim() !== "");
+            
+            if (!initialized) {
+                // Hide standard login card and display beautiful Setup Wizard
+                document.getElementById('login-card').style.display = 'none';
+                document.getElementById('setup-card').style.display = 'block';
+            } else {
+                document.getElementById('login-card').style.display = 'block';
+                document.getElementById('setup-card').style.display = 'none';
+            }
+        }, (err) => {
+            console.warn("Realtime Database initialized check read blocked (expected if rules locked down):", err);
+            // Default to login card if read is blocked (database already has strict locked-down rules!)
+            document.getElementById('login-card').style.display = 'block';
+            document.getElementById('setup-card').style.display = 'none';
+        });
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+
+            loginBtn.disabled = true;
+            loginBtn.innerText = "AUTHENTICATING...";
+            errorMsg.style.display = 'none';
+
+            firebase.auth().signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    firebase.database().ref('settings_private/superAdminEmail').once('value')
+                        .then((snap) => {
+                            const superAdminEmail = snap.val() ? snap.val().toLowerCase() : '';
+                            const userEmail = user.email ? user.email.toLowerCase() : '';
+                            if (userEmail === superAdminEmail) {
+                                window.location.href = '../owner/index.html';
+                            } else {
+                                window.location.href = 'dashboard.html';
+                            }
+                        })
+                        .catch((err) => {
+                            console.warn("Could not read superAdminEmail, defaulting to dashboard:", err);
+                            window.location.href = 'dashboard.html';
+                        });
+                })
+                .catch((error) => {
+                    console.error(error);
+                    loginBtn.disabled = false;
+                    loginBtn.innerText = "ACCESS DASHBOARD";
+                    
+                    if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+                        errorMsg.innerText = "Invalid access code or password.";
+                    } else if (error.code === 'auth/too-many-requests') {
+                        errorMsg.innerText = "Too many failed attempts. Please try again later.";
+                    } else {
+                        errorMsg.innerText = "Authentication failed: " + error.message;
+                    }
+                    errorMsg.style.display = 'block';
+                });
+        });
+
+        window.forgotPassword = () => {
+            const email = document.getElementById('email').value.trim();
+            if (!email) {
+                alert("Please enter your email access code first.");
+                return;
+            }
+            if (confirm(`Send password reset link to ${email}?`)) {
+                firebase.auth().sendPasswordResetEmail(email)
+                    .then(() => alert("Password reset link sent! Please check your inbox."))
+                    .catch(err => alert("Error: " + err.message));
+            }
+        };
+
+        // Onboarding Setup Initialization
+        window.initializeRestaurant = async () => {
+            const storeName = document.getElementById('setup-store-name').value.trim();
+            const adminEmail = document.getElementById('setup-admin-email').value.trim();
+            const adminPass = document.getElementById('setup-admin-pass').value;
+            const ownerEmail = document.getElementById('setup-owner-email').value.trim();
+            const ownerPass = document.getElementById('setup-owner-pass').value;
+            const ownerPhone = document.getElementById('setup-owner-phone').value.trim();
+            const setupErrorMsg = document.getElementById('setup-error-msg');
+            const setupBtn = document.getElementById('setup-btn');
+
+            if (!storeName || !adminEmail || !adminPass || !ownerEmail || !ownerPass || !ownerPhone) {
+                setupErrorMsg.innerText = "⚠️ All fields are required!";
+                setupErrorMsg.style.display = 'block';
+                return;
+            }
+
+            if (adminEmail.toLowerCase() === ownerEmail.toLowerCase()) {
+                setupErrorMsg.innerText = "⚠️ Owner Email and Admin/Staff Email must be different!";
+                setupErrorMsg.style.display = 'block';
+                return;
+            }
+
+            if (adminPass.length < 6 || ownerPass.length < 6) {
+                setupErrorMsg.innerText = "⚠️ Passwords must be at least 6 characters.";
+                setupErrorMsg.style.display = 'block';
+                return;
+            }
+
+            setupBtn.disabled = true;
+            setupBtn.innerText = "INITIALIZING DATABASE...";
+            setupErrorMsg.style.display = 'none';
+
+            try {
+                // 1. Create Staff/Admin user in private Firebase Auth
+                try {
+                    await firebase.auth().createUserWithEmailAndPassword(adminEmail, adminPass);
+                } catch (createErr) {
+                    if (createErr.code === 'auth/email-already-in-use') {
+                        // Attempt fallback sign in to confirm ownership
+                        try {
+                            await firebase.auth().signInWithEmailAndPassword(adminEmail, adminPass);
+                        } catch (signInErr) {
+                            throw new Error("Staff email is already in use by another account. Please enter the correct password for this email to authorize database setup, or use a different email.");
+                        }
+                    } else {
+                        throw createErr;
+                    }
+                }
+
+                // 2. Sign out Staff/Admin user to prepare for Owner account registration
+                await firebase.auth().signOut();
+
+                // 3. Create Owner user in Firebase Auth (leaves Owner logged in)
+                try {
+                    await firebase.auth().createUserWithEmailAndPassword(ownerEmail, ownerPass);
+                } catch (createErr) {
+                    if (createErr.code === 'auth/email-already-in-use') {
+                        // Attempt fallback sign in to confirm ownership
+                        try {
+                            await firebase.auth().signInWithEmailAndPassword(ownerEmail, ownerPass);
+                        } catch (signInErr) {
+                            throw new Error("Owner email is already in use by another account. Please enter the correct password for this email to authorize database setup, or use a different email.");
+                        }
+                    } else {
+                        throw createErr;
+                    }
+                }
+
+                // 4. Populate initial Realtime Database records
+                const settingsPromise = firebase.database().ref('settings').set({
+                    storeName: storeName,
+                    initialized: true,
+                    lastInvoiceNo: 1000,
+                    tableLimit: 20
+                });
+
+                const privatePromise = firebase.database().ref('settings_private').set({
+                    superAdminEmail: ownerEmail.toLowerCase(),
+                    ownerPhone: ownerPhone,
+                    upiId: "",
+                    staff: {
+                        [adminEmail.toLowerCase().replace(/\./g, '_')]: {
+                            email: adminEmail.toLowerCase(),
+                            addedAt: Date.now()
+                        }
+                    }
+                });
+
+                const catPromise = firebase.database().ref('categories/specialties').set({
+                    name: "Specialties",
+                    order: 1
+                });
+
+                const menuPromise = firebase.database().ref('menu/item_starter').set({
+                    id: "item_starter",
+                    name: "Classic Margherita Pizza",
+                    price: 299,
+                    category: "specialties",
+                    available: true,
+                    dietary: "veg",
+                    image: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=400",
+                    description: "Fresh mozzarella, rich tomato sauce, and fresh basil leaves on a crispy crust."
+                });
+
+                const tablePromises = [];
+                for (let i = 1; i <= 5; i++) {
+                    tablePromises.push(firebase.database().ref(`tables/table_${i}`).set({
+                        number: i,
+                        status: "free"
+                    }));
+                }
+
+                await Promise.all([settingsPromise, privatePromise, catPromise, menuPromise, ...tablePromises]);
+
+                // Show success feedback & redirect to owner index page (since Owner is logged in!)
+                setupBtn.style.background = "#22c55e";
+                setupBtn.style.color = "white";
+                setupBtn.innerText = "✓ SETUP SUCCESSFUL! REDIRECTING...";
+                setTimeout(() => {
+                    window.location.href = '../owner/index.html';
+                }, 1500);
+
+            } catch (err) {
+                console.error(err);
+                setupBtn.disabled = false;
+                setupBtn.innerText = "INITIALIZE CAFE RESTO";
+                setupErrorMsg.innerText = `❌ Error: ${err.message}`;
+                setupErrorMsg.style.display = 'block';
+            }
+        };
+
+        // Redirect if already logged in
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                // Only redirect if database check confirmed initialization
+                firebase.database().ref('settings').once('value').then(snap => {
+                    const settings = snap.val() || {};
+                    const initialized = settings.initialized === true || (settings.storeName && settings.storeName.trim() !== "");
+                    if (initialized) {
+                        firebase.database().ref('settings_private/superAdminEmail').once('value')
+                            .then((emailSnap) => {
+                                const superAdminEmail = emailSnap.val() ? emailSnap.val().toLowerCase() : '';
+                                const userEmail = user.email ? user.email.toLowerCase() : '';
+                                if (userEmail === superAdminEmail) {
+                                    window.location.href = '../owner/index.html';
+                                } else {
+                                    window.location.href = 'dashboard.html';
+                                }
+                            })
+                            .catch((err) => {
+                                console.warn("Could not read superAdminEmail, defaulting to dashboard:", err);
+                                window.location.href = 'dashboard.html';
+                            });
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

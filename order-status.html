@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="description" content="Track your restaurant order status in real time.">
+    <title>Live Order Status | Caferesto</title>
+    
+    <!-- Google Fonts & FontAwesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #f59e0b;
+            --primary-hover: #d97706;
+            --bg-dark: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.4);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-preparing: #f59e0b;
+            --accent-prepared: #10b981;
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            --shadow-glow-prep: 0 0 15px rgba(245, 158, 11, 0.15);
+            --shadow-glow-ready: 0 0 15px rgba(16, 185, 129, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image:
+                radial-gradient(ellipse at 10% 20%, rgba(245, 158, 11, 0.06) 0%, transparent 40%),
+                radial-gradient(ellipse at 90% 80%, rgba(16, 185, 129, 0.06) 0%, transparent 40%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            padding: 2rem 0;
+            text-align: center;
+            position: relative;
+        }
+
+        .logo {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.04em;
+            background: linear-gradient(to right, var(--primary), #fbbf24);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.2rem;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        /* Table Badge info */
+        .table-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            padding: 0.4rem 1rem;
+            border-radius: 99rem;
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 0.85rem;
+            margin-top: 1rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Main tracking columns container */
+        .columns-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 2rem;
+            flex: 1;
+        }
+
+        @media (max-width: 640px) {
+            .columns-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+        }
+
+        /* Glass status column */
+        .status-column {
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            min-height: 350px;
+        }
+
+        .column-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 0.8rem;
+        }
+
+        .column-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+        }
+
+        .column-title.preparing {
+            color: var(--accent-preparing);
+        }
+
+        .column-title.prepared {
+            color: var(--accent-prepared);
+        }
+
+        .column-badge {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 99rem;
+            padding: 0.1rem 0.6rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        /* Order items list */
+        .items-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            overflow-y: auto;
+            flex: 1;
+            padding-right: 0.2rem;
+        }
+
+        .items-list::-webkit-scrollbar {
+            width: 4px;
+        }
+        .items-list::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 99rem;
+        }
+
+        .item-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 1rem;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            transition: var(--transition);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .item-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .item-name {
+            font-weight: 700;
+            font-size: 1rem;
+            color: white;
+        }
+
+        .item-meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .item-qty {
+            background: var(--primary-soft);
+            color: var(--primary);
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+            font-weight: 800;
+            font-size: 0.8rem;
+            margin-right: 0.5rem;
+            border: 1px solid rgba(245, 158, 11, 0.1);
+        }
+
+        .prepared .item-qty {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-prepared);
+            border-color: rgba(16, 185, 129, 0.1);
+        }
+
+        /* Status Indicators */
+        .status-icon {
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+        }
+
+        .preparing-icon {
+            color: var(--accent-preparing);
+            background: rgba(245, 158, 11, 0.1);
+            animation: pulse-glow-prep 2s infinite;
+        }
+
+        .prepared-icon {
+            color: var(--accent-prepared);
+            background: rgba(16, 185, 129, 0.1);
+            animation: pulse-glow-ready 2s infinite;
+        }
+
+        @keyframes pulse-glow-prep {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
+            50% { box-shadow: 0 0 10px 4px rgba(245, 158, 11, 0.1); }
+        }
+
+        @keyframes pulse-glow-ready {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            50% { box-shadow: 0 0 10px 4px rgba(16, 185, 129, 0.1); }
+        }
+
+        /* Empty / Welcome states */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 3rem 1.5rem;
+            margin: auto;
+            opacity: 0.7;
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-title {
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .empty-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Navigation button */
+        .nav-footer {
+            padding: 2rem 0;
+            text-align: center;
+        }
+
+        .btn-menu {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.85rem 2rem;
+            border-radius: 99rem;
+            border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 700;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+        }
+
+        .btn-menu:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow-prep);
+        }
+
+        .btn-menu:active {
+            transform: scale(0.97);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1 class="logo">DesignE</h1>
+            <p class="subtitle">Live Order Status Tracker</p>
+            <div id="table-badge-container" style="display: none;">
+                <div class="table-badge">
+                    <i class="fas fa-chair"></i>
+                    <span id="table-number-text">Table 00</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Display Panel -->
+        <div id="tracker-content" class="columns-grid" style="display: none;">
+            
+            <!-- Category: Preparing -->
+            <div class="status-column">
+                <div class="column-header">
+                    <div class="column-title preparing">
+                        <i class="fas fa-fire-burner"></i> Preparing
+                    </div>
+                    <span id="badge-preparing" class="column-badge">0</span>
+                </div>
+                <ul id="list-preparing" class="items-list">
+                    <!-- Dynamic -->
+                </ul>
+            </div>
+
+            <!-- Category: Prepared -->
+            <div class="status-column">
+                <div class="column-header">
+                    <div class="column-title prepared">
+                        <i class="fas fa-circle-check"></i> Prepared (Ready)
+                    </div>
+                    <span id="badge-prepared" class="column-badge">0</span>
+                </div>
+                <ul id="list-prepared" class="items-list">
+                    <!-- Dynamic -->
+                </ul>
+            </div>
+
+        </div>
+
+        <!-- Empty State (No session / No orders) -->
+        <div id="empty-state" class="empty-state" style="display: none;">
+            <div class="empty-icon"><i class="fas fa-receipt"></i></div>
+            <div class="empty-title">No Active Orders Found</div>
+            <div class="empty-subtitle">Place some delicious items in your cart to track them in real-time.</div>
+        </div>
+
+        <!-- Connection / Loading State -->
+        <div id="loading-state" class="empty-state">
+            <div class="empty-icon"><i class="fas fa-circle-notch fa-spin" style="color: var(--primary);"></i></div>
+            <div class="empty-title">Connecting to Kitchen...</div>
+            <div class="empty-subtitle">Fetching your real-time status details.</div>
+        </div>
+
+        <div class="nav-footer">
+            <a href="index.html" class="btn-menu">
+                <i class="fas fa-arrow-left"></i> Return to Menu
+            </a>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-check-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+    <script src="js/firebase-config.js"></script>
+    
+    <script>
+        // Extract Session details
+        const urlParams = new URLSearchParams(window.location.search);
+        const sid = urlParams.get('sid') || localStorage.getItem('caferesto_session');
+        const tableNo = localStorage.getItem('caferesto_table');
+
+        const badgeContainer = document.getElementById('table-badge-container');
+        const tableText = document.getElementById('table-number-text');
+        
+        if (tableNo) {
+            badgeContainer.style.display = 'block';
+            tableText.innerText = `Table ${tableNo}`;
+        }
+
+        // DOM elements
+        const loadingState = document.getElementById('loading-state');
+        const emptyState = document.getElementById('empty-state');
+        const trackerContent = document.getElementById('tracker-content');
+        
+        const listPreparing = document.getElementById('list-preparing');
+        const listPrepared = document.getElementById('list-prepared');
+        
+        const badgePreparing = document.getElementById('badge-preparing');
+        const badgePrepared = document.getElementById('badge-prepared');
+
+        // Initial check
+        if (!sid) {
+            loadingState.style.display = 'none';
+            emptyState.style.display = 'flex';
+        } else {
+            firebase.auth().onAuthStateChanged((user) => {
+                const urlSid = urlParams.get('sid');
+                const localSid = localStorage.getItem('caferesto_session');
+                
+                // VULN-11 fix: Restrict session access — only local session owner or owner/staff with email
+                const hasAccess = !urlSid || urlSid === localSid || (user !== null && user.email);
+                if (!hasAccess) {
+                    loadingState.style.display = 'none';
+                    trackerContent.style.display = 'none';
+                    emptyState.style.display = 'flex';
+                    document.getElementById('empty-state').innerHTML = `
+                        <div class="empty-icon" style="color: #ef4444;"><i class="fas fa-user-lock"></i></div>
+                        <div class="empty-title">Access Denied</div>
+                        <div class="empty-subtitle">You do not have permission to track this session.</div>
+                    `;
+                    return;
+                }
+
+                // Load Store Settings to customize name
+                db.ref('settings').once('value').then(snap => {
+                    if (snap.exists() && snap.val().storeName) {
+                        document.querySelector('.logo').innerText = snap.val().storeName;
+                        document.title = `${snap.val().storeName} | Live Order Status`;
+                    }
+                });
+
+                // Set up real-time sync with orders node matching the session ID
+                db.ref('orders').orderByChild('sessionId').equalTo(sid).on('value', snapshot => {
+                    loadingState.style.display = 'none';
+                    
+                    const orders = snapshot.val();
+                    if (!orders) {
+                        renderTracking([]);
+                        return;
+                    }
+
+                    const allOrders = Object.entries(orders)
+                        .map(([id, order]) => ({ id, ...order }));
+
+                    renderTracking(allOrders);
+                }, err => {
+                    console.error("Firebase read error:", err);
+                    loadingState.style.display = 'none';
+                    emptyState.style.display = 'flex';
+                });
+            });
+        }
+
+        // Render function
+        function renderTracking(allOrders) {
+            listPreparing.innerHTML = '';
+            listPrepared.innerHTML = '';
+
+            if (allOrders.length === 0) {
+                trackerContent.style.display = 'none';
+                emptyState.style.display = 'flex';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            trackerContent.style.display = '';
+
+            // Group orders by their invoiceNo or fallback short ID
+            const grouped = {};
+            allOrders.forEach(order => {
+                const id = order.invoiceNo || order.id.substr(-6).toUpperCase();
+                if (!grouped[id]) {
+                    grouped[id] = {
+                        invoiceNo: order.invoiceNo || order.id.substr(-6).toUpperCase(),
+                        tableNo: order.tableNo,
+                        status: order.status || 'pending',
+                        timestamp: order.timestamp || Date.now(),
+                        sessionId: order.sessionId
+                    };
+                } else {
+                    // If any order in the group is still pending, the overall status is pending
+                    if (order.status === 'pending') {
+                        grouped[id].status = 'pending';
+                    }
+                    if (order.timestamp < grouped[id].timestamp) {
+                        grouped[id].timestamp = order.timestamp; // show oldest order timestamp
+                    }
+                }
+            });
+
+            const uniqueOrders = Object.values(grouped);
+            let prepCount = 0;
+            let readyCount = 0;
+
+            uniqueOrders.forEach(o => {
+                const status = o.status;
+                const timeStr = new Date(o.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const isOwnOrder = (sid && o.sessionId === sid);
+
+                const li = document.createElement('li');
+                li.className = isOwnOrder ? 'item-card own-order' : 'item-card';
+
+                if (isOwnOrder) {
+                    li.style.border = '2px solid var(--primary)';
+                    li.style.background = 'rgba(245, 158, 11, 0.08)';
+                    li.style.boxShadow = '0 0 15px rgba(245, 158, 11, 0.15)';
+                }
+
+                li.innerHTML = `
+                    <div class="item-details">
+                        <span class="item-name">
+                            Order #${sanitize(o.invoiceNo)}
+                            ${isOwnOrder ? '<span style="margin-left: 0.5rem; background: var(--primary); color: black; font-size: 0.65rem; padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">Your Order</span>' : ''}
+                        </span>
+                        <span class="item-meta">Table ${sanitize(o.tableNo)} • Ordered at ${timeStr}</span>
+                    </div>
+                    <div class="status-icon ${status === 'pending' ? 'preparing-icon' : 'prepared-icon'}">
+                        <i class="${status === 'pending' ? 'fas fa-fire-burner' : 'fas fa-check'}"></i>
+                    </div>
+                `;
+
+                if (status === 'pending') {
+                    listPreparing.appendChild(li);
+                    prepCount++;
+                } else if (status === 'prepared') {
+                    listPrepared.appendChild(li);
+                    readyCount++;
+                }
+            });
+
+            // Update column badges
+            badgePreparing.innerText = prepCount;
+            badgePrepared.innerText = readyCount;
+
+            // Update page title
+            const storeName = document.querySelector('.logo').innerText || 'Caferesto';
+            if (prepCount > 0) {
+                document.title = `(${prepCount}) Active Orders | ${storeName}`;
+            } else {
+                document.title = `All Orders Ready | ${storeName}`;
+            }
+
+            // If everything is empty after checking unique orders
+            if (prepCount === 0 && readyCount === 0) {
+                trackerContent.style.display = 'none';
+                emptyState.style.display = 'flex';
+            }
+        }
+    </script>
+</body>
+
+</html>
