@@ -376,6 +376,55 @@
             75% { transform: translateX(10px); }
         }
 
+        /* Staff Whitelist Styling */
+        .staff-item-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            gap: 1rem;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .staff-email-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            min-width: 0;
+            flex: 1;
+        }
+
+        .staff-email-text {
+            font-weight: 600;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        @media (max-width: 480px) {
+            .staff-item-card {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.8rem;
+                text-align: left;
+            }
+            
+            .staff-email-text {
+                white-space: normal;
+                word-break: break-all;
+            }
+            
+            .staff-item-card button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
         /* Hide main content until verified */
         .main-content { display: none; }
     </style>
