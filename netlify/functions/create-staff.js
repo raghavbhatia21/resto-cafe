@@ -106,7 +106,7 @@ exports.handler = async (event, context) => {
             });
         } catch (authErr) {
             // If user already exists in Firebase Auth, we proceed so we can still authorize them in RTDB
-            if (authErr.code === 'auth/email-already-in-use') {
+            if (authErr.code === 'auth/email-already-exists' || authErr.code === 'auth/email-already-in-use') {
                 userRecord = await admin.auth().getUserByEmail(email.toLowerCase());
             } else {
                 throw authErr;

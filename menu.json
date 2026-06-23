@@ -1,1 +1,351 @@
-{}
+{
+  "burger": {
+    "id": "burger",
+    "name": "burger",
+    "price": 200,
+    "category": "starter",
+    "description": "nice burger",
+    "image": "https://cdn.apartmenttherapy.info/image/upload/f_jpg,q_auto:eco,c_fill,g_auto,w_1500,ar_4:3/tk%2Fphoto%2F2025%2F06-2025%2F2025-06-burger-doneness-guide%2Fburger-doneness-guide-0195",
+    "available": true,
+    "variants": [
+      {
+        "name": "King size",
+        "price": 350
+      },
+      {
+        "name": "Regular",
+        "price": 200
+      }
+    ]
+  },
+  "butter-chicken": {
+    "id": "butter-chicken",
+    "name": "Butter Chicken",
+    "price": 299,
+    "category": "main",
+    "description": "Tender chicken pieces simmered in a rich, creamy tomato-butter gravy with aromatic spices and kasuri methi.",
+    "image": "https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?w=500",
+    "available": true,
+    "variants": [
+      {
+        "name": "Half",
+        "price": 199
+      },
+      {
+        "name": "Full",
+        "price": 299
+      }
+    ]
+  },
+  "chapati": {
+    "id": "chapati",
+    "name": "Chapati",
+    "price": 10,
+    "category": "main",
+    "description": "also known as Roti",
+    "image": "https://media.istockphoto.com/id/1150376593/photo/bread-tandoori-indian-cuisine.jpg?s=612x612&w=0&k=20&c=GGT5LN7G4zLhJTEnP_KcyvYuayi8f1nJcvQwvmj0rCM=",
+    "available": true,
+    "variants": [
+      {
+        "name": "Butter",
+        "price": 15
+      },
+      {
+        "name": "plain",
+        "price": 7
+      }
+    ]
+  },
+  "coffee": {
+    "id": "coffee",
+    "name": "Coffee ",
+    "price": 250,
+    "category": "drinks",
+    "description": "refreshing coffee",
+    "image": "https://media.istockphoto.com/id/2168005130/photo/heart-shaped-latte-art-in-a-white-cup-with-coffee-beans-isolated-on-wooden-table-side-view-of.jpg?s=612x612&w=0&k=20&c=hQmWzRmUpVsrEVD97Dwy7jxk6FmRJhKbA2VNh_D5V9s=",
+    "available": true,
+    "variants": []
+  },
+  "coke": {
+    "id": "coke",
+    "name": "Coke",
+    "price": 200,
+    "category": "drinks",
+    "description": "Refreshing coke",
+    "image": "https://kentstreetcellars.com.au/cdn/shop/files/coke-can_7bf866c9-bffc-449d-a173-de324ac47905_1000x1000.png?v=1687840069",
+    "available": true,
+    "variants": [
+      {
+        "name": "375 ml ( can )",
+        "price": 60
+      },
+      {
+        "name": "250 ml ( small bottle)",
+        "price": 30
+      },
+      {
+        "name": "1 liter bottle ",
+        "price": 120
+      }
+    ]
+  },
+  "cold-coffee": {
+    "id": "cold-coffee",
+    "name": "Cold Coffee",
+    "price": 149,
+    "category": "drinks",
+    "description": "Thick and creamy iced coffee blended with vanilla ice cream and a drizzle of chocolate. Pure indulgence.",
+    "image": "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=500",
+    "available": true,
+    "variants": [
+      {
+        "name": "Regular",
+        "price": 149
+      },
+      {
+        "name": "Belgian Chocolate",
+        "price": 189
+      }
+    ]
+  },
+  "dal-makhani": {
+    "id": "dal-makhani",
+    "name": "Dal Makhani",
+    "price": 219,
+    "category": "main",
+    "description": "Slow-cooked black lentils and kidney beans in a buttery, smoky gravy. A timeless North Indian classic.",
+    "image": "https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=500",
+    "available": true,
+    "variants": [
+      {
+        "name": "Half",
+        "price": 149
+      },
+      {
+        "name": "Full",
+        "price": 219
+      }
+    ]
+  },
+  "dosaa": {
+    "id": "dosaa",
+    "name": "Dosaa",
+    "price": 500,
+    "category": "main",
+    "description": "Tasty dosaa",
+    "image": "../assets/images/dosa-recipe-2.jpg",
+    "available": true,
+    "variants": [
+      {
+        "name": "Small size",
+        "price": 350
+      },
+      {
+        "name": "Regular",
+        "price": 400
+      },
+      {
+        "name": "Large",
+        "price": 500
+      }
+    ]
+  },
+  "fresh-lime-soda": {
+    "id": "fresh-lime-soda",
+    "name": "Fresh Lime Soda",
+    "price": 89,
+    "category": "drinks",
+    "description": "Zesty fresh lime juice with soda water, served sweet or salted. The perfect thirst quencher.",
+    "image": "https://images.unsplash.com/photo-1534353473418-4cfa6c56fd38?w=500",
+    "available": true,
+    "variants": [
+      {
+        "name": "Sweet",
+        "price": 89
+      },
+      {
+        "name": "Salted",
+        "price": 89
+      }
+    ]
+  },
+  "lemon-soda": {
+    "id": "lemon-soda",
+    "name": "Lemon soda",
+    "price": 50,
+    "category": "drinks",
+    "description": "Fresh refreshing soda",
+    "image": "https://www.acouplecooks.com/wp-content/uploads/2021/12/Lemon-Soda-004.jpg",
+    "available": true,
+    "variants": []
+  },
+  "loaded-nachos": {
+    "id": "loaded-nachos",
+    "name": "Loaded Nachos",
+    "price": 249,
+    "category": "starter",
+    "description": "Crunchy tortilla chips layered with melted cheese, jalapeños, salsa, sour cream, and fresh guacamole.",
+    "image": "https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?w=500",
+    "available": true,
+    "variants": []
+  },
+  "mango-lassi": {
+    "id": "mango-lassi",
+    "name": "Mango Lassi",
+    "price": 129,
+    "category": "drinks",
+    "description": "Creamy yogurt-based mango smoothie blended with cardamom and a hint of saffron. Refreshingly sweet.",
+    "image": "https://images.unsplash.com/photo-1527661591475-527312dd65f5?w=500",
+    "available": true,
+    "variants": []
+  },
+  "masala-chai": {
+    "id": "masala-chai",
+    "name": "Masala Chai",
+    "price": 49,
+    "category": "drinks",
+    "description": "Authentic Indian spiced tea brewed with ginger, cardamom, cloves, and fresh milk. Soul-warming comfort.",
+    "image": "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=500",
+    "available": true,
+    "variants": []
+  },
+  "masala-papad": {
+    "id": "masala-papad",
+    "name": "Masala Papad",
+    "price": 99,
+    "category": "starter",
+    "description": "Crispy roasted papad topped with tangy onion, tomato, green chili, and coriander masala.",
+    "image": "https://images.unsplash.com/photo-1601050690117-94f5f6fa8bd7?w=500",
+    "available": true,
+    "variants": []
+  },
+  "moctail": {
+    "id": "moctail",
+    "name": "Moctail",
+    "price": 40,
+    "category": "drinks",
+    "description": "Refreshing moctail",
+    "image": "https://butfirstwebrunch.com/wp-content/uploads/2024/06/sunrise-mocktail-3.jpg",
+    "available": true,
+    "variants": []
+  },
+  "paneer-butter-masala": {
+    "id": "paneer-butter-masala",
+    "name": "Paneer Butter Masala",
+    "price": 269,
+    "category": "main",
+    "description": "Soft paneer cubes in a velvety makhani gravy, slow-cooked with butter, cream, and cashew paste.",
+    "image": "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=500",
+    "available": true,
+    "variants": [
+      {
+        "name": "Half",
+        "price": 179
+      },
+      {
+        "name": "Full",
+        "price": 269
+      }
+    ]
+  },
+  "paneer-tikka": {
+    "id": "paneer-tikka",
+    "name": "Paneer Tikka",
+    "price": 229,
+    "category": "starter",
+    "description": "Smoky chargrilled cottage cheese cubes marinated in hung curd and aromatic spices. Served with mint chutney.",
+    "image": "https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=500",
+    "available": true,
+    "variants": []
+  },
+  "pizza": {
+    "id": "pizza",
+    "name": "Pizza",
+    "price": 400,
+    "category": "starter",
+    "description": "Tasty delicious slices",
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyj7BW_BFiCoFNPU9diIByZ0v3tdu4p46EpzFXvH1crqVHLEkZeenO7Oc&s=10",
+    "available": true,
+    "variants": [
+      {
+        "name": "Small",
+        "price": 250
+      },
+      {
+        "name": "Regular",
+        "price": 400
+      },
+      {
+        "name": "Large",
+        "price": 550
+      }
+    ]
+  },
+  "sambhar": {
+    "id": "sambhar",
+    "name": "Sambhar",
+    "price": 200,
+    "category": "main",
+    "description": "Best south indian enhancements",
+    "image": "https://www.cubesnjuliennes.com/wp-content/uploads/2021/01/Vegetable-Sambar-Recipe.jpg",
+    "available": true,
+    "variants": [
+      {
+        "name": "Half bowl",
+        "price": 150
+      },
+      {
+        "name": "Full bowl",
+        "price": 250
+      }
+    ]
+  },
+  "sandwich": {
+    "id": "sandwich",
+    "name": "Sandwich",
+    "price": 150,
+    "category": "starter",
+    "description": "Great taste",
+    "image": "https://img.freepik.com/free-photo/side-view-club-sandwich-with-salted-cucumbers-lemon-olives-round-white-plate_176474-3049.jpg?semt=ais_user_personalization&w=740&q=80",
+    "available": true,
+    "variants": [
+      {
+        "name": "half",
+        "price": 100
+      },
+      {
+        "name": "full",
+        "price": 180
+      }
+    ]
+  },
+  "spring-rolls": {
+    "id": "spring-rolls",
+    "name": "Crispy Spring Rolls",
+    "price": 179,
+    "category": "starter",
+    "description": "Golden-fried veggie rolls stuffed with cabbage, carrots, and glass noodles. Served with sweet chili sauce.",
+    "image": "https://images.unsplash.com/photo-1606525437679-037aca74a654?w=500",
+    "available": true,
+    "variants": []
+  },
+  "veg-biryani": {
+    "id": "veg-biryani",
+    "name": "Veg Biryani",
+    "price": 249,
+    "category": "main",
+    "description": "Fragrant basmati rice layered with spiced mixed vegetables, saffron, and fried onions. Served with raita.",
+    "image": "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=500",
+    "available": true,
+    "variants": [
+      {
+        "name": "Regular",
+        "price": 249
+      },
+      {
+        "name": "Family Pack",
+        "price": 449
+      }
+    ]
+  }
+}

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Migration | Caferesto</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Outfit', sans-serif; background: #0a0a0f; color: white; padding: 2rem; display: flex; flex-direction: column; align-items: center; }
+        .card { background: rgba(255,255,255,0.05); padding: 2rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); max-width: 600px; width: 100%; text-align: center; }
+        h1 { color: #f59e0b; margin-bottom: 1rem; }
+        .log { background: #000; color: #0f0; padding: 1rem; border-radius: 10px; height: 300px; overflow-y: auto; text-align: left; font-family: monospace; font-size: 0.85rem; margin-top: 1rem; }
+        button { background: #f59e0b; color: #000; border: none; padding: 1rem 2rem; border-radius: 10px; font-weight: 800; cursor: pointer; margin-top: 1.5rem; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .alert { background: rgba(245, 158, 11, 0.1); border-left: 4px solid #f59e0b; padding: 1rem; margin-bottom: 1.5rem; text-align: left; font-size: 0.9rem; border-radius: 0 10px 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Firebase Migration Tool</h1>
+        
+        <div class="alert">
+            <strong>⚠️ IMPORTANT:</strong> Before starting, you MUST copy the content of <code>database.rules.json</code> and paste it into your <strong>Firebase Console > Realtime Database > Rules</strong> tab then click <strong>Publish</strong>. Otherwise, you will get a "Permission Denied" error.
+        </div>
+
+        <p>This utility will migrate your <code>menu.json</code> and <code>offers.json</code> data into the Firebase Realtime Database.</p>
+        <button id="migrate-btn">START MIGRATION</button>
+        <div id="log" class="log">Ready to migrate...<br></div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="../js/firebase-config.js"></script>
+
+    <script>
+        const logEl = document.getElementById('log');
+        const btn = document.getElementById('migrate-btn');
+
+        function log(msg, color = 'white') {
+            const span = document.createElement('span');
+            span.style.color = color;
+            span.innerHTML = `${new Date().toLocaleTimeString()} - ${msg}<br>`;
+            logEl.appendChild(span);
+            logEl.scrollTop = logEl.scrollHeight;
+        }
+
+        async function migrate() {
+            btn.disabled = true;
+            log("Initializing migration...", "#f59e0b");
+
+            // Check Auth
+            const user = firebase.auth().currentUser;
+            if (!user) {
+                log("Error: No authenticated session found.", "red");
+                log("<a href='login.html' style='color:#f59e0b'>Login here</a> then return to this page.");
+                btn.disabled = false;
+                return;
+            }
+
+            log(`Authenticated as: <strong>${user.email}</strong>`);
+
+            try {
+                // 1. Migrate Menu
+                log("Fetching local menu.json...");
+                const menuRes = await fetch('../menu.json');
+                if (!menuRes.ok) throw new Error("Could not find menu.json in root folder.");
+                const menuData = await menuRes.json();
+                
+                log(`Found ${Object.keys(menuData).length} items. Pushing to Firebase...`);
+                await firebase.database().ref('menu').set(menuData);
+                log("Menu migration successful! ✅", "#0f0");
+
+                // 2. Migrate Offers
+                log("Fetching offers.json...");
+                const offersRes = await fetch('../offers.json');
+                if (!offersRes.ok) throw new Error("Could not find offers.json in root folder.");
+                const offersData = await offersRes.json();
+                
+                log(`Found ${Object.keys(offersData).length} offers. Pushing to Firebase...`);
+                await firebase.database().ref('offers').set(offersData);
+                log("Offers migration successful! ✅", "#0f0");
+
+                // 3. Setup Initial Categories
+                log("Creating default categories...");
+                const categories = {
+                    starter: { name: "Starters", order: 1 },
+                    main: { name: "Main Course", order: 2 },
+                    drinks: { name: "Drinks", order: 3 }
+                };
+                await firebase.database().ref('categories').set(categories);
+                log("Categories initialized! ✅", "#0f0");
+
+                log("MIGRATION COMPLETE!", "cyan");
+                log("You can now safely delete the <code>content/</code> folder and <code>build.js</code>.");
+                
+            } catch (err) {
+                if (err.message.includes("permission_denied") || err.code === "PERMISSION_DENIED" || (err.message && err.message.toLowerCase().includes("permission denied"))) {
+                    log("<strong>FATAL: Permission Denied!</strong>", "red");
+                    log("The Firebase server rejected the write operation.");
+                    log("<strong>FIX:</strong> You must update your Rules in the Firebase Console using the code I provided in <code>database.rules.json</code>.");
+                } else {
+                    log(`MIGRATION FAILED: ${err.message}`, "red");
+                }
+                console.error("Migration Error:", err);
+                btn.disabled = false;
+            }
+        }
+
+        btn.addEventListener('click', migrate);
+    </script>
+</body>
+</html>

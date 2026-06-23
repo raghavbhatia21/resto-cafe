@@ -59,39 +59,38 @@ buildJson(OFFERS_DIR, OFFERS_OUTPUT, (id, data) => ({
 }));
 
 // 3. Generate Backend config.json for Serverless Functions
-// Skip during Netlify CI builds to prevent Netlify's secrets scanner from flagging public API keys and aborting the build.
 if (process.env.NETLIFY !== 'true') {
     try {
         const configPath = path.join(__dirname, 'js', 'firebase-config.js');
-    if (fs.existsSync(configPath)) {
-        const content = fs.readFileSync(configPath, 'utf8');
-        
-        // Match the firebaseConfig object declaration
-        const configBlockMatch = content.match(/const\s+firebaseConfig\s*=\s*\{([\s\S]*?)\};/);
-        if (configBlockMatch) {
-            const blockContent = configBlockMatch[1];
-            const config = {};
+        if (fs.existsSync(configPath)) {
+            const content = fs.readFileSync(configPath, 'utf8');
             
-            // Extract required properties using regex
-            const fields = ['apiKey', 'authDomain', 'databaseURL', 'projectId', 'storageBucket', 'messagingSenderId', 'appId'];
-            fields.forEach(field => {
-                const regex = new RegExp(`${field}:\\s*["']([^"']+)["']`);
-                const match = blockContent.match(regex);
-                if (match && match[1]) {
-                    config[field] = match[1];
+            // Match the firebaseConfig object declaration
+            const configBlockMatch = content.match(/const\s+firebaseConfig\s*=\s*\{([\s\S]*?)\};/);
+            if (configBlockMatch) {
+                const blockContent = configBlockMatch[1];
+                const config = {};
+                
+                // Extract required properties using regex
+                const fields = ['apiKey', 'authDomain', 'databaseURL', 'projectId', 'storageBucket', 'messagingSenderId', 'appId'];
+                fields.forEach(field => {
+                    const regex = new RegExp(`${field}:\\s*["']([^"']+)["']`);
+                    const match = blockContent.match(regex);
+                    if (match && match[1]) {
+                        config[field] = match[1];
+                    }
+                });
+                
+                const functionsDir = path.join(__dirname, 'netlify', 'functions');
+                if (!fs.existsSync(functionsDir)) {
+                    fs.mkdirSync(functionsDir, { recursive: true });
                 }
-            });
-            
-            const functionsDir = path.join(__dirname, 'netlify', 'functions');
-            if (!fs.existsSync(functionsDir)) {
-                fs.mkdirSync(functionsDir, { recursive: true });
+                
+                const functionsConfigPath = path.join(functionsDir, 'config.json');
+                fs.writeFileSync(functionsConfigPath, JSON.stringify(config, null, 2));
+                console.log(`Generated netlify/functions/config.json for serverless context.`);
             }
-            
-            const functionsConfigPath = path.join(functionsDir, 'config.json');
-            fs.writeFileSync(functionsConfigPath, JSON.stringify(config, null, 2));
-            console.log(`Generated netlify/functions/config.json for serverless context.`);
         }
-    }
     } catch (err) {
         console.error("Failed to build config for serverless functions:", err);
     }

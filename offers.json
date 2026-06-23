@@ -1,1 +1,56 @@
-{}
+{
+  "couples-special": {
+    "id": "couples-special",
+    "title": "Couples special",
+    "description": "Get pizza and pasta in combo for special price",
+    "price": 400,
+    "tag": "Made for each other",
+    "image": "https://thumbs.dreamstime.com/b/tempting-image-gourmet-burger-pizza-french-fries-rustic-wooden-cutting-board-delicious-combo-meal-375225885.jpg",
+    "active": true
+  },
+  "date-night-special": {
+    "id": "date-night-special",
+    "title": "Date Night Special",
+    "description": "2 Main Course + 2 Drinks of your choice. A complete meal for two at an unbeatable price.",
+    "price": 599,
+    "tag": "BEST VALUE",
+    "image": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600",
+    "active": true
+  },
+  "happy-hour": {
+    "id": "happy-hour",
+    "title": "Happy Hour Drinks",
+    "description": "Buy 1 Get 1 free on all beverages! Available every day from 3 PM to 6 PM.",
+    "price": 0,
+    "tag": "BOGO 🎉",
+    "image": "https://images.unsplash.com/photo-1544145945-f90425340c7e?w=600",
+    "active": true
+  },
+  "holi-special": {
+    "id": "holi-special",
+    "title": "Holi special",
+    "description": "Get a combo of sandwich and burger with a coffee at a special price",
+    "price": 300,
+    "tag": "Limited time",
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBSDCivqYDUMfRXcGGyEiai8gMJo2H5ygAiwt4nvihUg&s=10",
+    "active": true
+  },
+  "starter-combo": {
+    "id": "starter-combo",
+    "title": "Starter Combo",
+    "description": "Pick any 2 starters from our menu at a special combo price. Perfect for sharing!",
+    "price": 199,
+    "tag": "COMBO DEAL",
+    "image": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600",
+    "active": true
+  },
+  "valantines-special": {
+    "id": "valantines-special",
+    "title": "Valantines special",
+    "description": "Special noodles and pasta for special price ",
+    "price": 450,
+    "tag": "Event special",
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS93gPJDM3CWRhh-DTB5F10hvrNPfDtUNiOtzlHc8U2Aw&s=10",
+    "active": true
+  }
+}
