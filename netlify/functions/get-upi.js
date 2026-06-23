@@ -27,8 +27,7 @@ exports.handler = async (event, context) => {
         ...(process.env.NODE_ENV === 'development' ? ['http://localhost', 'http://127.0.0.1'] : [])
     ];
 
-    // Tighten allowed origin match: exact or exact subdomain matching
-    const matchedOrigin = allowedOrigins.find(o => origin === o || origin.startsWith(o + "/"));
+    const matchedOrigin = origin ? allowedOrigins.find(o => origin === o || origin.startsWith(o + "/")) : null;
 
     if (event.httpMethod === "OPTIONS") {
         return { 
@@ -51,7 +50,7 @@ exports.handler = async (event, context) => {
         };
     }
 
-    if (!matchedOrigin) {
+    if (origin && !matchedOrigin) {
         return { 
             statusCode: 403, 
             headers: {
@@ -64,7 +63,7 @@ exports.handler = async (event, context) => {
 
     const responseHeaders = {
         ...headers,
-        "Access-Control-Allow-Origin": matchedOrigin
+        "Access-Control-Allow-Origin": matchedOrigin || allowedOrigins[0]
     };
 
     try {
