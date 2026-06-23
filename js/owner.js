@@ -697,18 +697,12 @@ function renderStaffList(staffList) {
     entries.forEach(([key, staff]) => {
         if (!staff || !staff.email) return;
         const li = document.createElement('li');
-        li.style.display = 'flex';
-        li.style.justifyContent = 'space-between';
-        li.style.alignItems = 'center';
-        li.style.padding = '0.8rem 1rem';
-        li.style.background = 'rgba(255, 255, 255, 0.03)';
-        li.style.border = '1px solid var(--glass-border)';
-        li.style.borderRadius = '8px';
+        li.className = 'staff-item-card';
         
         li.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 0.8rem;">
-                <i class="fas fa-user" style="color: var(--text-dim);"></i>
-                <span style="font-weight: 600; font-size: 0.9rem;">${sanitize(staff.email)}</span>
+            <div class="staff-email-wrapper">
+                <i class="fas fa-user" style="color: var(--text-dim); flex-shrink: 0;"></i>
+                <span class="staff-email-text">${sanitize(staff.email)}</span>
             </div>
             <button class="nav-btn logout" style="padding: 0.4rem 0.8rem; background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2);" onclick="removeStaffAccount('${key}', '${sanitize(staff.email)}')">
                 <i class="fas fa-trash-alt"></i> Revoke
