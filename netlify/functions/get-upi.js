@@ -35,7 +35,7 @@ exports.handler = async (event, context) => {
             statusCode: 200, 
             headers: {
                 ...headers,
-                "Access-Control-Allow-Origin": matchedOrigin || allowedOrigins[0]
+                "Access-Control-Allow-Origin": matchedOrigin ? origin : allowedOrigins[0]
             } 
         };
     }
@@ -45,7 +45,7 @@ exports.handler = async (event, context) => {
             statusCode: 405, 
             headers: {
                 ...headers,
-                "Access-Control-Allow-Origin": matchedOrigin || allowedOrigins[0]
+                "Access-Control-Allow-Origin": matchedOrigin ? origin : allowedOrigins[0]
             }, 
             body: JSON.stringify({ error: "Method Not Allowed" }) 
         };
@@ -64,7 +64,7 @@ exports.handler = async (event, context) => {
 
     const responseHeaders = {
         ...headers,
-        "Access-Control-Allow-Origin": matchedOrigin || allowedOrigins[0]
+        "Access-Control-Allow-Origin": matchedOrigin ? origin : allowedOrigins[0]
     };
 
     try {

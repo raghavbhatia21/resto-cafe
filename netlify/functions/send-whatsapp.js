@@ -25,7 +25,7 @@ exports.handler = async (event, context) => {
     const matchedOrigin = allowedOrigins.find(o => origin === o || origin.startsWith(o + "/") || origin.startsWith(o + ":"));
 
     const headers = {
-        "Access-Control-Allow-Origin": matchedOrigin || allowedOrigins[0],
+        "Access-Control-Allow-Origin": matchedOrigin ? origin : allowedOrigins[0],
         "Access-Control-Allow-Headers": "Content-Type, Authorization",
         "Access-Control-Allow-Methods": "POST, OPTIONS",
         "Content-Type": "application/json"

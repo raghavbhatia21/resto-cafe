@@ -566,10 +566,17 @@
             if (!user) {
                 window.location.href = '../admin/login.html';
             } else {
-                const emailKey = user.email.toLowerCase().replace(/\./g, '_');
+                const email = user.email || '';
+                if (!email) {
+                    showAccessDenied("Your account email is missing. Please contact the administrator.");
+                    return;
+                }
+                const emailKey = email.toLowerCase().replace(/\./g, '_');
+                
                 firebase.database().ref('settings_private/superAdminEmail').once('value').then(emailSnap => {
                     const superAdminEmail = emailSnap.val() ? emailSnap.val().toLowerCase() : '';
-                    const userEmail = user.email.toLowerCase();
+                    const userEmail = email.toLowerCase();
+                    
                     if (userEmail === superAdminEmail || userEmail === 'raghavbhatia332@gmail.com') {
                         document.getElementById('auth-cloak')?.remove();
                     } else {
@@ -578,21 +585,38 @@
                             if (staffSnap.exists()) {
                                 document.getElementById('auth-cloak')?.remove();
                             } else {
-                                alert("Access Denied: Your staff authorization has been revoked.");
-                                firebase.auth().signOut().then(() => {
-                                    window.location.href = '../admin/login.html';
-                                });
+                                showAccessDenied("Your staff authorization has been revoked.");
                             }
+                        }, error => {
+                            console.error("Staff whitelist listener failed:", error);
+                            showAccessDenied("Database access denied. Please verify your permissions.");
                         });
                     }
                 }).catch(err => {
                     console.error("Auth validation failed:", err);
-                    firebase.auth().signOut().then(() => {
-                        window.location.href = '../admin/login.html';
-                    });
+                    showAccessDenied("Failed to verify authorization credentials.");
                 });
             }
         });
+
+        function showAccessDenied(message) {
+            document.getElementById('auth-cloak')?.remove();
+            document.body.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #020205; color: white; font-family: 'Outfit', sans-serif; text-align: center; padding: 2rem; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10000;">
+                    <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); padding: 3rem; border-radius: 24px; max-width: 450px; width: 100%; box-shadow: 0 20px 40px rgba(0,0,0,0.5); backdrop-filter: blur(20px);">
+                        <div style="font-size: 4rem; color: #ff4b2b; margin-bottom: 1.5rem;"><i class="fas fa-exclamation-triangle"></i></div>
+                        <h2 style="font-weight: 800; margin-bottom: 1rem; font-size: 1.8rem; letter-spacing: -0.5px;">ACCESS DENIED</h2>
+                        <p style="color: #888899; margin-bottom: 2rem; line-height: 1.5; font-size: 0.95rem;">${message}</p>
+                        <div style="font-size: 0.85rem; color: #ff9d00; font-weight: 600;"><i class="fas fa-spinner fa-spin"></i> Redirecting to login...</div>
+                    </div>
+                </div>
+            `;
+            firebase.auth().signOut().then(() => {
+                setTimeout(() => {
+                    window.location.href = '../admin/login.html';
+                }, 3000);
+            });
+        }
         function logout() {
             firebase.auth().signOut().then(() => window.location.href = '../admin/login.html');
         }

@@ -16,14 +16,15 @@ exports.handler = async (event) => {
         "https://caferesto-94e83.netlify.app",
         "https://rajesh-cafe.netlify.app",
         "https://menudome.netlify.app",
+        "http://localhost",
+        "http://127.0.0.1",
         ...(process.env.URL ? [process.env.URL] : []),
-        ...(process.env.DEPLOY_PRIME_URL ? [process.env.DEPLOY_PRIME_URL] : []),
-        ...(process.env.NODE_ENV === 'development' ? ['http://localhost', 'http://127.0.0.1'] : [])
+        ...(process.env.DEPLOY_PRIME_URL ? [process.env.DEPLOY_PRIME_URL] : [])
     ];
     const matchedOrigin = allowedOrigins.find(o => origin === o || origin.startsWith(o + "/") || origin.startsWith(o + ":"));
 
     const headers = {
-        "Access-Control-Allow-Origin": matchedOrigin || allowedOrigins[0],
+        "Access-Control-Allow-Origin": matchedOrigin ? origin : allowedOrigins[0],
         "Access-Control-Allow-Headers": "Content-Type",
         "Access-Control-Allow-Methods": "POST, OPTIONS",
         "Content-Type": "application/json"
