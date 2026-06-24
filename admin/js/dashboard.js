@@ -609,7 +609,7 @@ window.renderCustomers = () => {
                         <div style="font-size: 0.85rem; font-weight: 600; color: white;">${lastVisitDate}</div>
                         <div style="font-size: 0.7rem; color: var(--text-muted);">${lastVisitTime}</div>
                     </div>
-                    <button onclick="deleteCustomer('${key}', '${sanitize(c.name || 'this customer')}')" class="add-btn" style="width: auto; padding: 0.6rem 0.9rem; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); font-size: 0.8rem;" title="Delete customer">
+                    <button onclick="deleteCustomer('${key}')" class="add-btn" style="width: auto; padding: 0.6rem 0.9rem; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); font-size: 0.8rem;" title="Delete customer">
                         <i class="fas fa-trash-alt"></i>
                     </button>
                 </div>
@@ -617,8 +617,10 @@ window.renderCustomers = () => {
     }).join('');
 };
 
-window.deleteCustomer = (key, name) => {
-    if (confirm(`Delete customer "${name}" from the directory? This cannot be undone.`)) {
+window.deleteCustomer = (key) => {
+    const c = localCustomers[key];
+    const displayName = c ? sanitize(c.name || 'this customer') : 'this customer';
+    if (confirm(`Delete customer "${displayName}" from the directory? This cannot be undone.`)) {
         firebase.database().ref('customers/' + key).remove()
             .then(() => alert('Customer removed successfully.'))
             .catch(err => alert('Failed to delete: ' + err.message));
