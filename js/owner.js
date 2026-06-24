@@ -765,7 +765,19 @@ window.addStaffAccount = async function() {
 
 window.removeStaffAccount = function(key, email) {
     if (confirm(`Are you sure you want to revoke access for ${email}? They will be immediately blocked from logging in.`)) {
-        db.ref(`settings_private/staff/${key}`).remove()
+        db.ref(`settings_private/staff/${key}`).once('value')
+            .then(snapshot => {
+                const staffData = snapshot.val();
+                const uid = staffData ? staffData.uid : null;
+
+                const updates = {};
+                updates[`settings_private/staff/${key}`] = null;
+                if (uid) {
+                    updates[`settings_private/staff_uids/${uid}`] = null;
+                }
+
+                return db.ref().update(updates);
+            })
             .then(() => {
                 alert("Staff authorization revoked successfully.");
             })

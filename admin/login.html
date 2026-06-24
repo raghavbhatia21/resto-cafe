@@ -272,13 +272,16 @@
 
             try {
                 // 1. Create Staff/Admin user in private Firebase Auth
+                let staffUid = null;
                 try {
-                    await firebase.auth().createUserWithEmailAndPassword(adminEmail, adminPass);
+                    const staffCred = await firebase.auth().createUserWithEmailAndPassword(adminEmail, adminPass);
+                    staffUid = staffCred.user.uid;
                 } catch (createErr) {
                     if (createErr.code === 'auth/email-already-in-use') {
                         // Attempt fallback sign in to confirm ownership
                         try {
-                            await firebase.auth().signInWithEmailAndPassword(adminEmail, adminPass);
+                            const staffCred = await firebase.auth().signInWithEmailAndPassword(adminEmail, adminPass);
+                            staffUid = staffCred.user.uid;
                         } catch (signInErr) {
                             throw new Error("Staff email is already in use by another account. Please enter the correct password for this email to authorize database setup, or use a different email.");
                         }
@@ -321,8 +324,12 @@
                     staff: {
                         [adminEmail.toLowerCase().replace(/\./g, '_')]: {
                             email: adminEmail.toLowerCase(),
+                            uid: staffUid,
                             addedAt: Date.now()
                         }
+                    },
+                    staff_uids: {
+                        [staffUid]: true
                     }
                 });
 

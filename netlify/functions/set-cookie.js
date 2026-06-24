@@ -16,11 +16,12 @@ exports.handler = async (event, context) => {
         "https://caferesto-94e83.netlify.app",
         "https://rajesh-cafe.netlify.app",
         "https://menudome.netlify.app",
+        "http://localhost",
+        "http://127.0.0.1",
         ...(process.env.URL ? [process.env.URL] : []),
-        ...(process.env.DEPLOY_PRIME_URL ? [process.env.DEPLOY_PRIME_URL] : []),
-        ...(process.env.NODE_ENV === 'development' ? ['http://localhost', 'http://127.0.0.1'] : [])
+        ...(process.env.DEPLOY_PRIME_URL ? [process.env.DEPLOY_PRIME_URL] : [])
     ];
-    const matchedOrigin = allowedOrigins.find(o => origin === o || origin.startsWith(o + "/"));
+    const matchedOrigin = allowedOrigins.find(o => origin === o || origin.startsWith(o + "/") || origin.startsWith(o + ":"));
 
     const headers = {
         "Access-Control-Allow-Origin": matchedOrigin || allowedOrigins[0],
@@ -114,6 +115,29 @@ exports.handler = async (event, context) => {
                         const staffData = await staffRes.json();
                         if (staffData && staffData.email && staffData.email.toLowerCase() === email) {
                             isAuthorized = true;
+
+                            // Auto-backfill UID if it is missing or mismatched in the database
+                            const uid = userObj.localId;
+                            if (uid && (!staffData.uid || staffData.uid !== uid)) {
+                                try {
+                                    const patchUrl = `${dbUrlBase}/settings_private/staff/${emailKey}.json${authParam}`;
+                                    await fetch(patchUrl, {
+                                        method: 'PATCH',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ uid })
+                                    });
+
+                                    const uidUrl = `${dbUrlBase}/settings_private/staff_uids/${uid}.json${authParam}`;
+                                    await fetch(uidUrl, {
+                                        method: 'PUT',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify(true)
+                                    });
+                                    console.log(`Auto-backfilled UID for staff: ${email}`);
+                                } catch (backfillErr) {
+                                    console.error("Failed to backfill staff UID:", backfillErr);
+                                }
+                            }
                         }
                     }
                 } catch (staffErr) {

@@ -22,12 +22,13 @@ exports.handler = async (event, context) => {
         "https://caferesto-94e83.netlify.app",
         "https://rajesh-cafe.netlify.app",
         "https://menudome.netlify.app",
+        "http://localhost",
+        "http://127.0.0.1",
         ...(process.env.URL ? [process.env.URL] : []),
-        ...(process.env.DEPLOY_PRIME_URL ? [process.env.DEPLOY_PRIME_URL] : []),
-        ...(process.env.NODE_ENV === 'development' ? ['http://localhost', 'http://127.0.0.1'] : [])
+        ...(process.env.DEPLOY_PRIME_URL ? [process.env.DEPLOY_PRIME_URL] : [])
     ];
 
-    const matchedOrigin = origin ? allowedOrigins.find(o => origin === o || origin.startsWith(o + "/")) : null;
+    const matchedOrigin = origin ? allowedOrigins.find(o => origin === o || origin.startsWith(o + "/") || origin.startsWith(o + ":")) : null;
 
     if (event.httpMethod === "OPTIONS") {
         return { 

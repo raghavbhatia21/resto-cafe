@@ -38,20 +38,24 @@
         ".read": "auth != null",
         ".write": "auth != null && (auth.token.email === 'raghavbhatia332@gmail.com' || auth.token.email === root.child('settings_private/superAdminEmail').val())"
       },
+      "staff_uids": {
+        ".read": "auth != null",
+        ".write": "auth != null && (auth.token.email === 'raghavbhatia332@gmail.com' || auth.token.email === root.child('settings_private/superAdminEmail').val())"
+      },
       ".write": "auth != null && !data.exists()"
     },
     "menu": {
       ".read": "true",
-      ".write": "auth != null && (auth.token.email === 'raghavbhatia332@gmail.com' || auth.token.email === root.child('settings_private/superAdminEmail').val())",
+      ".write": "auth != null && (auth.token.email === 'raghavbhatia332@gmail.com' || auth.token.email === root.child('settings_private/superAdminEmail').val() || root.child('settings_private/staff_uids').child(auth.uid).exists())",
       ".indexOn": ["category"]
     },
     "offers": {
       ".read": "true",
-      ".write": "auth != null && (auth.token.email === 'raghavbhatia332@gmail.com' || auth.token.email === root.child('settings_private/superAdminEmail').val())"
+      ".write": "auth != null && (auth.token.email === 'raghavbhatia332@gmail.com' || auth.token.email === root.child('settings_private/superAdminEmail').val() || root.child('settings_private/staff_uids').child(auth.uid).exists())"
     },
     "categories": {
       ".read": "true",
-      ".write": "auth != null && (auth.token.email === 'raghavbhatia332@gmail.com' || auth.token.email === root.child('settings_private/superAdminEmail').val())",
+      ".write": "auth != null && (auth.token.email === 'raghavbhatia332@gmail.com' || auth.token.email === root.child('settings_private/superAdminEmail').val() || root.child('settings_private/staff_uids').child(auth.uid).exists())",
       ".indexOn": ["order"]
     },
     "sessions": {
@@ -109,6 +113,7 @@
       ".read": "auth != null",
       ".indexOn": ["lastVisit", "visits", "name"],
       "$phoneKey": {
+        ".read": "true",
         ".write": "true",
         ".validate": "!newData.exists() || (newData.hasChildren(['name', 'phone']) && newData.child('phone').isString() && newData.child('name').isString() && (auth != null || (!data.exists() && newData.child('visits').val() === 1 && newData.child('totalSpent').val() === 0) || (data.exists() && newData.child('totalSpent').val() === data.child('totalSpent').val() && (newData.child('visits').val() === data.child('visits').val() || newData.child('visits').val() === data.child('visits').val() + 1))))"
       }

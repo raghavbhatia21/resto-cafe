@@ -20,7 +20,7 @@ exports.handler = async (event) => {
         ...(process.env.DEPLOY_PRIME_URL ? [process.env.DEPLOY_PRIME_URL] : []),
         ...(process.env.NODE_ENV === 'development' ? ['http://localhost', 'http://127.0.0.1'] : [])
     ];
-    const matchedOrigin = allowedOrigins.find(o => origin === o || origin.startsWith(o + "/"));
+    const matchedOrigin = allowedOrigins.find(o => origin === o || origin.startsWith(o + "/") || origin.startsWith(o + ":"));
 
     const headers = {
         "Access-Control-Allow-Origin": matchedOrigin || allowedOrigins[0],

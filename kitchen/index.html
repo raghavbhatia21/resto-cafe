@@ -391,7 +391,31 @@
             if (!user) {
                 window.location.href = '../admin/login.html';
             } else {
-                document.getElementById('auth-cloak')?.remove();
+                const emailKey = user.email.toLowerCase().replace(/\./g, '_');
+                firebase.database().ref('settings_private/superAdminEmail').once('value').then(emailSnap => {
+                    const superAdminEmail = emailSnap.val() ? emailSnap.val().toLowerCase() : '';
+                    const userEmail = user.email.toLowerCase();
+                    if (userEmail === superAdminEmail || userEmail === 'raghavbhatia332@gmail.com') {
+                        document.getElementById('auth-cloak')?.remove();
+                    } else {
+                        // Live check whitelisted status
+                        firebase.database().ref(`settings_private/staff/${emailKey}`).on('value', staffSnap => {
+                            if (staffSnap.exists()) {
+                                document.getElementById('auth-cloak')?.remove();
+                            } else {
+                                alert("Access Denied: Your staff authorization has been revoked.");
+                                firebase.auth().signOut().then(() => {
+                                    window.location.href = '../admin/login.html';
+                                });
+                            }
+                        });
+                    }
+                }).catch(err => {
+                    console.error("Auth validation failed:", err);
+                    firebase.auth().signOut().then(() => {
+                        window.location.href = '../admin/login.html';
+                    });
+                });
             }
         });
         function logout() {
