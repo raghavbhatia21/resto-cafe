@@ -248,6 +248,9 @@ window.markAsPaid = (sessionId, tableNo, method) => {
 
         if (session.invoiceNo) {
             proceedPaid(session.invoiceNo);
+        } else if (!session.total || session.total <= 0) {
+            // Zero-amount bills should not consume an invoice number
+            proceedPaid(null);
         } else {
             db.ref('settings/lastInvoiceNo').transaction(currentVal => {
                 return (currentVal === null || currentVal === undefined) ? 1000 : currentVal + 1;
