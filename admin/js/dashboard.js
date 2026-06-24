@@ -17,7 +17,17 @@ firebase.auth().onAuthStateChanged((user) => {
         }
         const emailKey = email.toLowerCase().replace(/\./g, '_');
         
+        // Fallback Timeout: Remove cloak after 4 seconds if database check hangs (e.g. API key block or offline)
+        const fallbackTimeout = setTimeout(() => {
+            const cloak = document.getElementById('auth-cloak');
+            if (cloak) {
+                console.warn("Database whitelist check timed out. Removing cloak.");
+                cloak.remove();
+            }
+        }, 4000);
+
         firebase.database().ref('settings_private/superAdminEmail').once('value').then(emailSnap => {
+            clearTimeout(fallbackTimeout);
             const superAdminEmail = emailSnap.val() ? emailSnap.val().toLowerCase() : '';
             const userEmail = email.toLowerCase();
             
@@ -42,6 +52,7 @@ firebase.auth().onAuthStateChanged((user) => {
                 });
             }
         }).catch(err => {
+            clearTimeout(fallbackTimeout);
             console.error("Auth validation failed:", err);
             showAccessDenied("Failed to verify authorization credentials.");
         });
