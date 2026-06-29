@@ -30,12 +30,18 @@
         </div>
 
         <div class="tabs-wrapper">
-            <nav class="tabs">
+            <button class="tabs-arrow tabs-arrow-left" id="tabs-arrow-left" aria-label="Scroll categories left">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <nav class="tabs" id="tabs-nav">
                 <div id="tab-indicator" class="gliding-indicator"></div>
                 <button class="tab-btn active" data-category="starter">Starters</button>
                 <button class="tab-btn" data-category="main">Main Course</button>
                 <button class="tab-btn" data-category="drinks">Drinks</button>
             </nav>
+            <button class="tabs-arrow tabs-arrow-right" id="tabs-arrow-right" aria-label="Scroll categories right">
+                <i class="fas fa-chevron-right"></i>
+            </button>
         </div>
 
         <!-- Offers Section -->

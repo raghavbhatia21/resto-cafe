@@ -194,6 +194,43 @@ header {
     /* Ensure it doesn't block clicks */
 }
 
+/* Category Tab Scroll Arrows */
+.tabs-arrow {
+    display: none; /* Hidden on desktop */
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: opacity 0.3s, background 0.3s, transform 0.3s;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.tabs-arrow.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.tabs-arrow:active {
+    transform: scale(0.9);
+    background: rgba(255, 255, 255, 0.12);
+}
+
+@keyframes tabs-hint-bounce {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(8px); }
+    50% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+}
+
 /* Offers Section */
 .offers-carousel {
     display: flex;
@@ -887,20 +924,32 @@ header {
     }
 
     /* Scrollable Tabs */
+    .tabs-wrapper {
+        max-width: 100%;
+        margin-bottom: 2rem;
+        overflow: visible;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .tabs-arrow {
+        display: flex;
+    }
+
     .tabs {
         display: flex;
         overflow-x: auto;
         justify-content: flex-start;
-        padding: 0.5rem 1rem;
-        /* More horizontal padding */
+        padding: 0.5rem 0.25rem;
         margin-bottom: 0;
         gap: 0.75rem;
         -ms-overflow-style: none;
         scrollbar-width: none;
-        mask-image: linear-gradient(to right, black 90%, transparent 100%);
-        -webkit-mask-image: linear-gradient(to right, black 90%, transparent 100%);
         white-space: nowrap;
-        /* Prevent wrapping */
+        flex: 1;
+        min-width: 0;
+        scroll-behavior: smooth;
     }
 
     .tabs::-webkit-scrollbar {
@@ -913,12 +962,6 @@ header {
         font-size: 0.9rem;
         position: relative;
         z-index: 2;
-    }
-
-    .tabs-wrapper {
-        max-width: 100%;
-        margin-bottom: 2rem;
-        overflow: visible;
     }
 
     .welcome-form .input-row {

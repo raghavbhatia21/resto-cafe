@@ -61,8 +61,54 @@ function loadCategories() {
                 setTimeout(() => updateTabIndicator(btn), 100);
             }
         });
+
+        // Initialize scroll arrows after categories render
+        setTimeout(() => initTabScrollArrows(), 150);
     });
 }
+
+// --- Category Tab Scroll Arrow Logic ---
+function initTabScrollArrows() {
+    const tabs = document.getElementById('tabs-nav');
+    const leftArrow = document.getElementById('tabs-arrow-left');
+    const rightArrow = document.getElementById('tabs-arrow-right');
+    if (!tabs || !leftArrow || !rightArrow) return;
+
+    function updateArrows() {
+        const scrollLeft = tabs.scrollLeft;
+        const maxScroll = tabs.scrollWidth - tabs.clientWidth;
+
+        // Show left arrow if scrolled past 5px
+        if (scrollLeft > 5) {
+            leftArrow.classList.add('visible');
+        } else {
+            leftArrow.classList.remove('visible');
+        }
+
+        // Show right arrow if more content to the right
+        if (maxScroll - scrollLeft > 5) {
+            rightArrow.classList.add('visible');
+        } else {
+            rightArrow.classList.remove('visible');
+        }
+    }
+
+    // Scroll by ~150px on arrow click
+    leftArrow.onclick = () => { tabs.scrollBy({ left: -150, behavior: 'smooth' }); };
+    rightArrow.onclick = () => { tabs.scrollBy({ left: 150, behavior: 'smooth' }); };
+
+    tabs.addEventListener('scroll', updateArrows, { passive: true });
+    window.addEventListener('resize', updateArrows);
+    updateArrows();
+
+    // One-time hint bounce animation on mobile
+    if (tabs.scrollWidth > tabs.clientWidth && !window._tabsHintDone) {
+        window._tabsHintDone = true;
+        tabs.style.animation = 'tabs-hint-bounce 0.8s ease-out';
+        tabs.addEventListener('animationend', () => { tabs.style.animation = ''; }, { once: true });
+    }
+}
+
 
 function loadStoreSettings() {
     db.ref('settings').on('value', snapshot => {
