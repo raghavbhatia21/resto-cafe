@@ -44,6 +44,19 @@
   force = true
   conditions = {Cookie = ["!logged_in"]}
 
+# Proxy Firebase Auth handler through custom authDomain (eliminates mobile referrer block)
+[[redirects]]
+  from = "/__/auth/*"
+  to = "https://caferesto-94e83.firebaseapp.com/__/auth/:splat"
+  status = 200
+  force = true
+
+# Allow framing for Firebase Auth iframe path only
+[[headers]]
+  for = "/__/auth/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+
 # Secure HTTP Headers (R11 fix - Refined for Firebase Fallback Polling & Source Maps)
 [[headers]]
   for = "/*"
