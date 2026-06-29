@@ -1,0 +1,55 @@
+[build]
+  command = "npm install && node build.js"
+  publish = "."
+  functions = "netlify/functions"
+
+[build.environment]
+  SECRETS_SCAN_SMART_DETECTION_ENABLED = "false"
+  SECRETS_SCAN_OMIT_KEYS = "DZINEE_DATABASE_URL,FIREBASE_API_KEY,FIREBASE_DATABASE_URL,FIREBASE_SERVICE_ACCOUNT"
+
+# Force admin/kitchen/cashier/owner paths to require the logged_in cookie (R3 fix)
+[[redirects]]
+  from = "/admin/dashboard.html"
+  to = "/admin/login.html"
+  status = 302
+  force = true
+  conditions = {Cookie = ["!logged_in"]}
+
+[[redirects]]
+  from = "/kitchen/*"
+  to = "/admin/login.html"
+  status = 302
+  force = true
+  conditions = {Cookie = ["!logged_in"]}
+
+[[redirects]]
+  from = "/cashier/*"
+  to = "/admin/login.html"
+  status = 302
+  force = true
+  conditions = {Cookie = ["!logged_in"]}
+
+[[redirects]]
+  from = "/owner/*"
+  to = "/admin/login.html"
+  status = 302
+  force = true
+  conditions = {Cookie = ["!logged_in"]}
+
+# VULN-15 fix: Protect migrate.html with cookie redirect
+[[redirects]]
+  from = "/admin/migrate.html"
+  to = "/admin/login.html"
+  status = 302
+  force = true
+  conditions = {Cookie = ["!logged_in"]}
+
+# Secure HTTP Headers (R11 fix - Refined for Firebase Fallback Polling & Source Maps)
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "same-origin"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.gstatic.com/recaptcha/ https://www.google-analytics.com https://www.recaptcha.net https://*.recaptcha.net https://www.googletagmanager.com https://*.googletagmanager.com https://*.firebaseio.com; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com wss://*.firebaseio.com https://api.whatsapp.com https://graph.facebook.com https://www.gstatic.com https://www.google-analytics.com https://www.googletagmanager.com https://*.googletagmanager.com; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; frame-src 'self' https://www.google.com/recaptcha/ https://www.recaptcha.net https://*.recaptcha.net https://*.firebaseapp.com;"
