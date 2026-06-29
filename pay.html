@@ -522,9 +522,9 @@
             const upiLink = `upi://pay?${upiBase}`;
 
             document.getElementById('pay-link').href = upiLink;
-            document.getElementById('gpay-link').href = `gpay://upi/pay?${upiBase}`;
-            document.getElementById('phonepe-link').href = `phonepe://pay?${upiBase}`;
-            document.getElementById('paytm-link').href = `paytm://pay?${upiBase}`;
+            document.getElementById('gpay-link').href = upiLink;
+            document.getElementById('phonepe-link').href = upiLink;
+            document.getElementById('paytm-link').href = upiLink;
 
             const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiLink)}`;
             document.getElementById('qr-image').src = qrUrl;
