@@ -1,6 +1,6 @@
 const firebaseConfig = {
     apiKey: "AIzaSyDhW8-bNetGtwL4LZdPoF4iK5Lcz-1SdJA",
-    authDomain: "caferesto-94e83.firebaseapp.com",
+    authDomain: "menudome.netlify.app",
     databaseURL: "https://caferesto-94e83-default-rtdb.firebaseio.com",
     projectId: "caferesto-94e83",
     storageBucket: "caferesto-94e83.firebasestorage.app",
