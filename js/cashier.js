@@ -306,8 +306,7 @@ window.showPaymentQR = async (sessionId, total, tableNo) => {
             return;
         }
 
-        const name = localSettings.storeName || "DesignE";
-        const upiLink = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(name)}&am=${total}&cu=INR&tn=${encodeURIComponent('Table ' + tableNo)}`;
+        const upiLink = `upi://pay?pa=${upiId}&am=${total}&cu=INR&tn=${encodeURIComponent('Table ' + tableNo)}`;
         const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiLink)}`;
 
         const modal = document.createElement('div');
