@@ -72,24 +72,29 @@ function initTabScrollArrows() {
     const tabs = document.getElementById('tabs-nav');
     const leftArrow = document.getElementById('tabs-arrow-left');
     const rightArrow = document.getElementById('tabs-arrow-right');
-    if (!tabs || !leftArrow || !rightArrow) return;
+    const wrapper = document.querySelector('.tabs-wrapper');
+    if (!tabs || !leftArrow || !rightArrow || !wrapper) return;
 
     function updateArrows() {
         const scrollLeft = tabs.scrollLeft;
         const maxScroll = tabs.scrollWidth - tabs.clientWidth;
 
-        // Show left arrow if scrolled past 5px
+        // Show/hide left arrow + fade
         if (scrollLeft > 5) {
             leftArrow.classList.add('visible');
+            wrapper.classList.add('fade-left');
         } else {
             leftArrow.classList.remove('visible');
+            wrapper.classList.remove('fade-left');
         }
 
-        // Show right arrow if more content to the right
+        // Show/hide right arrow + fade
         if (maxScroll - scrollLeft > 5) {
             rightArrow.classList.add('visible');
+            wrapper.classList.add('fade-right');
         } else {
             rightArrow.classList.remove('visible');
+            wrapper.classList.remove('fade-right');
         }
     }
 
