@@ -509,17 +509,13 @@
 
         function generatePaymentLinks() {
             const note = 'Table ' + table + ' - ' + orderId;
-            const tr = 'ORD' + String(orderId).replace(/[^a-zA-Z0-9]/g, '');
 
-            // URLSearchParams handles encoding correctly — no manual encodeURIComponent needed
-            // No mc parameter — removed to avoid broker blocks on personal transfers
+            // Clean deep link without pn or tr parameters to prevent bank risk blocks
             const params = new URLSearchParams({
                 pa: upiId,
-                pn: storeName,
                 am: amount,
                 cu: 'INR',
-                tn: note,
-                tr: tr
+                tn: note
             });
 
             const upiBase = params.toString().replace(/\+/g, '%20');
