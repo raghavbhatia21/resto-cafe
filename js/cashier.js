@@ -306,8 +306,11 @@ window.showPaymentQR = async (sessionId, total, tableNo) => {
             return;
         }
 
-        const upiLink = `upi://pay?pa=${upiId}&am=${total}&tn=${encodeURIComponent('Table ' + tableNo)}`;
-        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiLink)}`;
+        // Build UPI link manually — same approach as pay.html
+        const formattedTotal = parseFloat(total || 0).toFixed(2);
+        const note = ('Table ' + tableNo).replace(/[^a-zA-Z0-9 \-]/g, '');
+        const upiLink = 'upi://pay?pa=' + upiId + '&am=' + formattedTotal + '&tn=' + encodeURIComponent(note);
+        const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=' + encodeURIComponent(upiLink);
 
         const modal = document.createElement('div');
         modal.style = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 10000; flex-direction: column; color: white;";

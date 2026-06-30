@@ -508,24 +508,26 @@
         });
 
         function generatePaymentLinks() {
-            const note = 'Table ' + table + ' - ' + orderId;
+            // Build transaction note (alphanumeric + spaces only to avoid bank blocks)
+            const note = ('Table ' + table + ' - ' + orderId).replace(/[^a-zA-Z0-9 \-]/g, '');
 
-            // Clean deep link with only pa, am, and tn parameters to prevent bank risk blocks
-            const params = new URLSearchParams({
-                pa: upiId,
-                am: amount,
-                tn: note
-            });
+            // Format amount strictly as decimal with 2 places
+            const formattedAmount = parseFloat(amount || 0).toFixed(2);
 
-            const upiBase = params.toString().replace(/\+/g, '%20');
-            const upiLink = `upi://pay?${upiBase}`;
+            // Build UPI URI manually — URLSearchParams over-encodes the @ in pa
+            // which breaks some UPI apps. Manual construction matches working sites.
+            const upiLink = 'upi://pay?pa=' + upiId
+                + '&am=' + formattedAmount
+                + '&tn=' + encodeURIComponent(note);
 
+            // All buttons use standard upi:// intent — Android resolves to user's preferred app
             document.getElementById('pay-link').href = upiLink;
             document.getElementById('gpay-link').href = upiLink;
             document.getElementById('phonepe-link').href = upiLink;
             document.getElementById('paytm-link').href = upiLink;
 
-            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiLink)}`;
+            // Generate QR code from the same clean link
+            const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=' + encodeURIComponent(upiLink);
             document.getElementById('qr-image').src = qrUrl;
         }
 
