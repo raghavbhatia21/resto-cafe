@@ -306,7 +306,7 @@ window.showPaymentQR = async (sessionId, total, tableNo) => {
             return;
         }
 
-        const upiLink = `upi://pay?pa=${upiId}&am=${total}&cu=INR&tn=${encodeURIComponent('Table ' + tableNo)}`;
+        const upiLink = `upi://pay?pa=${upiId}&am=${total}&tn=${encodeURIComponent('Table ' + tableNo)}`;
         const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiLink)}`;
 
         const modal = document.createElement('div');
@@ -495,7 +495,7 @@ window.sendDailyReport = () => {
                 db.ref('settings_private/ownerPhone').set(phone);
             }
         }
-        
+
         if (phone) {
             const cleanPhone = phone.replace(/\D/g, '');
             const waUrl = "https://api.whatsapp.com/send?phone=91" + cleanPhone + "&text=" + encodeURIComponent(message);
@@ -538,7 +538,7 @@ function renderFloorMap() {
     const maxTables = localSettings.tableLimit || 20;
 
     container.innerHTML = '';
-// ... existing loop ...
+    // ... existing loop ...
 
     for (let i = 1; i <= maxTables; i++) {
         const tableKey = 'table_' + i;
@@ -645,10 +645,10 @@ window.saveModifier = () => {
 
     const session = localSessions[id];
     if (!session) return;
-    
+
     const modifiers = session.modifiers || [];
     modifiers.push({ type, label, isPercentage, value });
-    
+
     const tempSession = { ...session, modifiers };
     const newTotal = recalculateSessionTotal(tempSession);
     const subtotal = session.subtotal || (session.items || []).reduce((s, i) => s + (i.price * i.quantity), 0);
@@ -663,16 +663,16 @@ window.saveModifier = () => {
 };
 
 window.removeModifier = (id, index) => {
-    if(!confirm("Remove this modifier?")) return;
+    if (!confirm("Remove this modifier?")) return;
     const session = localSessions[id];
     if (!session) return;
-    
+
     let modifiers = session.modifiers || [];
     modifiers.splice(index, 1);
-    
+
     const tempSession = { ...session, modifiers };
     const newTotal = recalculateSessionTotal(tempSession);
-    
+
     db.ref('sessions/' + id).update({
         modifiers,
         total: newTotal
@@ -715,12 +715,12 @@ window.printBill = (sessionId) => {
                     ${itemRows}
                     ${session.modifiers && session.modifiers.length > 0 ? `<tr><td colspan="2" style="text-align:right; font-weight: bold; border-top: 1px dashed black; padding-top: 5px;">Subtotal</td><td style="text-align:right; border-top: 1px dashed black; padding-top: 5px;">Rs.${(session.subtotal || session.total || 0).toLocaleString()}</td></tr>` : ''}
                     ${(session.modifiers || []).map(mod => {
-                        const amtStr = mod.isPercentage ? mod.value + '%' : 'Rs.' + mod.value;
-                        const label = mod.type === 'discount' ? 'Discount (' + mod.label + ')' : 'Charge (' + mod.label + ')';
-                        const calculatedAmt = mod.isPercentage ? ((session.subtotal || 0) * (mod.value / 100)) : mod.value;
-                        const sign = mod.type === 'discount' ? '-' : '+';
-                        return `<tr><td colspan="2" style="text-align:right; font-size: 11px;">${sanitize(label)} [${amtStr}]</td><td style="text-align:right; font-size: 11px;">${sign}Rs.${Math.round(calculatedAmt).toLocaleString()}</td></tr>`;
-                    }).join('')}
+        const amtStr = mod.isPercentage ? mod.value + '%' : 'Rs.' + mod.value;
+        const label = mod.type === 'discount' ? 'Discount (' + mod.label + ')' : 'Charge (' + mod.label + ')';
+        const calculatedAmt = mod.isPercentage ? ((session.subtotal || 0) * (mod.value / 100)) : mod.value;
+        const sign = mod.type === 'discount' ? '-' : '+';
+        return `<tr><td colspan="2" style="text-align:right; font-size: 11px;">${sanitize(label)} [${amtStr}]</td><td style="text-align:right; font-size: 11px;">${sign}Rs.${Math.round(calculatedAmt).toLocaleString()}</td></tr>`;
+    }).join('')}
                 </tbody>
             </table>
             <div class="total-row"><span>NET TOTAL</span><span>Rs.${(session.total || 0).toLocaleString()}</span></div>
@@ -796,15 +796,15 @@ function autoPurgeOldData() {
     const now = new Date();
     const currentYear = now.getFullYear();
     const currentMonth = now.getMonth(); // 0-indexed (April is 3)
-    
+
     let fyStartYear = currentYear;
     if (currentMonth < 3) { // Before April
         fyStartYear = currentYear - 1;
     }
-    
+
     const fyStartDate = new Date(fyStartYear, 3, 1, 0, 0, 0); // April 1st of current FY
     const fyThreshold = fyStartDate.getTime();
-    
+
     // Auto-delete everything older than the current Financial Year
     // ONLY targets completed sessions. Active sessions have no settledAt and are skipped.
     db.ref('sessions')
@@ -815,7 +815,7 @@ function autoPurgeOldData() {
             const allMatch = snapshot.val();
             if (allMatch) {
                 let purgeCount = 0;
-                
+
                 Object.keys(allMatch).forEach(key => {
                     const session = allMatch[key];
                     // CRITICAL: Only remove if it actually HAS a settledAt value.
@@ -824,7 +824,7 @@ function autoPurgeOldData() {
                         purgeCount++;
                     }
                 });
-                
+
                 if (purgeCount > 0) {
                     // Show a subtle notification if cleanup performed
                     const toast = document.createElement('div');

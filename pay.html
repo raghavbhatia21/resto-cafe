@@ -481,19 +481,19 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ licenseId: lid, action: 'check' })
                     })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data && data.onboardingAmount) {
-                            amount = parseFloat(data.onboardingAmount).toFixed(2);
-                            table = 'SaaS';
-                            orderId = lid;
-                            updateUI();
-                        }
-                        generatePaymentLinks();
-                    })
-                    .catch(() => {
-                        generatePaymentLinks();
-                    });
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data && data.onboardingAmount) {
+                                amount = parseFloat(data.onboardingAmount).toFixed(2);
+                                table = 'SaaS';
+                                orderId = lid;
+                                updateUI();
+                            }
+                            generatePaymentLinks();
+                        })
+                        .catch(() => {
+                            generatePaymentLinks();
+                        });
                 } else {
                     generatePaymentLinks();
                 }
@@ -510,11 +510,10 @@
         function generatePaymentLinks() {
             const note = 'Table ' + table + ' - ' + orderId;
 
-            // Clean deep link without pn or tr parameters to prevent bank risk blocks
+            // Clean deep link with only pa, am, and tn parameters to prevent bank risk blocks
             const params = new URLSearchParams({
                 pa: upiId,
                 am: amount,
-                cu: 'INR',
                 tn: note
             });
 
